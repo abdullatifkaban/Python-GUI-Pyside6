@@ -7,10 +7,10 @@
 
 `move(x, y)` fonksiyonu ile widget'ları ekranda kesik koordinatlarda yerleştirmek mümkün olsa da bu yaklaşım ciddi sınırlamalar getirir:
 
-- **Pencere boyutu değiştiğinde düzgün kalmaz:** Kullanıcı pencereyi büyüttüğün ya da küçülttüğünde widget'lar aynı piksel konumunda kalır, sonuç olarak boşluklar oluşur veya widgetlar görünümden dışarı çıkabilir.
+- **Pencere boyutu değiştiğinde düzgün kalmaz:** Kullanıcı pencereyi büyüttüğünde ya da küçülttüğünde widget'lar aynı piksel konumunda kalır, sonuç olarak boşluklar oluşur veya widgetlar görünümden dışarı çıkabilir.
 - **Farklı ekran çözünürlüklerinde tutarsızlık:** Bir monitörde güzel görünen arayüz, başka bir çözünürlükte bozulabilir.
 - **Ülke ve dil farkları:** Metin uzunlukları dilden dile değişir; sabit konumlandırma ile metin kutusu veya etiketinin yeterli genişliği kalmayabilir, metin kesilebilir.
-- **Bakım zorluğu:** Her bir widget için ayrı ayrı koordinat hesaplamak zaman alır ve hata prone'dir.
+- **Bakım zorluğu:** Her bir widget için ayrı ayrı koordinat hesaplamak zaman alır ve hataya açıktır.
 
 Layout yöneticileri (`QVBoxLayout`, `QHBoxLayout`, `QGridLayout`, `QFormLayout`) bu sorunları otomatik olarak çözer; widgetları dinamik olarak düzenler, pencere boyutu değiştiğinde uyarlamalar yapar ve esnek boşluklar ile hizalama sağlar.
 
@@ -236,7 +236,7 @@ Pencerenin içinde:
   • Sonra "Yukarı" butonu
   • Sonra "Aşağı" butonu
   • (İsteğe bağlı) butonların altında başka esnek boşluk (kodda eklenmediği için görünmez)
-Pencereyi dikey olarak büyüttüğün veya küçülttüğünde, butonlar birbirine göre aynı oranda hareket eder ve üstteki boşluk da orantılı olarak değişir; bu yüzden butonlar daima pencerenin üst kısmında görünür kalır.
+Pencereyi dikey olarak büyüttüğünüz ya da küçülttüğünüzde, butonlar birbirine göre aynı oranda hareket eder ve üstteki boşluk da orantılı olarak değişir; bu yüzden butonlar daima pencerenin üst kısmında görünür kalır.
 ```
 
 > [!IMPORTANT]

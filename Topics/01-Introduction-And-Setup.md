@@ -114,7 +114,8 @@ Bu bölümde kullanacağımız temel PySide6 sınıfları ve metotları:
 | `.setWindowTitle("...")` | Pencerenin başlığındaki yazıyı değiştirir |
 | `.show()` | Pencereyi ekranda görünür hale getirir |
 | `.move(x, y)` | Pencerenin ekrandaki konumunu piksel bazlı ayarlar |
-| `QScreen().availableGeometry()` | Kullanıcının ekranı için kullanılabilir alanı verir |
+| `.primaryScreen()` |  QApplication nesnesi aracılığıyla aktif (monitörde ön plan) ekran nesnesini döndürür. |
+| `.availableGeometry()` | Kullanıcının ekranı için kullanılabilir alanı verir |
 
 ---
 
@@ -270,11 +271,6 @@ pencere.move(
 # Döngüyü başlat
 sys.exit(app.exec())
 ```
-
-> [!WARNING]
-> `QScreen` sınıfı **boş kurucu ile oluşturulamaz** (`QScreen()` çalışmaz!).
-> Ekran nesnesini **`app.primaryScreen()`** (veya pencere için `pencere.screen()`) ile almalısınız.
-> Ayrıca `QScreen` sınıfı, **PySide6.QtGui** modülünden gelir; burada ise ihtiyacımız olan `QApplication`'a zaten `app` üzerinden eriştiğimiz için ayrı import gerekmez.
 
 ---
 
