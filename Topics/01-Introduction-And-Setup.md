@@ -197,27 +197,31 @@ Ancak arka planda pencere hazır:
 #### Eklenecek Kod
 
 ```python
-from PySide6.QtCore import QScreen
+from PySide6.QtGui import QScreen
 
 # show() → pencerenizi artık ekranda görür!
 pencere.show()
 
-# Ekran ortatalama mantığı:
-# 1) QScreen().availableGeometry() → monitörün kullanılabilir alanını döndürür
-# 2) .center() → bu alanın tam ortasının koordinatlarını verir
-# 3) Penceremizi merkeze hizalamak için,
-#    merkez noktanın X / Y'sinden penceremizin genişliğinin / 2'sini çıkarıyoruz
+# Ekran ortalaması:
+# 1) QApplication.primaryScreen() ile aktif ekran nesnesini alırız
+# 2) availableGeometry() ile ekranın kullanılabilir kısmının geometrisini alırız
+# 3) center() ile bu geometrinin merkez noktasını buluruz
+# 4) Pencerenin sol üst köşesini, merkez noktanın X/Y'sinden
+#    penceremizin genişliğinin / 2'sini çıkarıp yerleştiririz
+ekran = QApplication.primaryScreen()
+ekran_geometrisi = ekran.availableGeometry()
 pencere.move(
-    QScreen().availableGeometry().center().x() - pencere.width() // 2,
-    QScreen().availableGeometry().center().y() - pencere.height() // 2
+    ekran_geometrisi.center().x() - pencere.width() // 2,
+    ekran_geometrisi.center().y() - pencere.height() // 2
 )
 ```
 
 #### Kod Analizi
 
 - `pencere.show()` → **Bu, pencerenizi ekranda görünür kılan tek komuttur.** Hiçbir şey yapılmasa da pencere hiç görünmez.
-- `QScreen().availableGeometry()` → Kullanıcının masaüstü ekranının kullanılabilir kısmını verir (örneğin, Windows'ta görev çubuğu altında kalan alanı).
-- `.center()` → Bu alanın tam ortasındaki noktayı `(x, y)` koordinatları cinsinden döndürür.
+- `app.primaryScreen()` → QApplication nesnesi aracılığıyla aktif (monitörde ön plan) ekran nesnesini döndürür.
+- `ekran.availableGeometry()` → Bu ekranın işletim sisteminin ayırdığı kullanılabilir alanı (görev çubuğu, farepanosu vb. dışarıda kalan alanlar hariic) verir.
+- `ekran_geometrisi.center()` → Bu alanın tam ortasındaki noktayı `(x, y)` koordinatları cinsinden döndürür.
 - `pencere.move(...)` → Pencerenizi, merkez noktanın sol/yukarıya kaydırılmış hâline gönderir; böylece pencere ekranın tam ortasında durur.
 
 #### Görsel / İşlevsel Çıktı
@@ -238,7 +242,6 @@ Ekranda 600 × 400 piksellik bir pencere belirir:
 ```python
 import sys
 from PySide6.QtWidgets import QApplication, QWidget
-from PySide6.QtCore import QScreen
 
 # Adım 1: QApplication ile uygulama döngüsü kurulur
 app = QApplication(sys.argv)
@@ -251,9 +254,17 @@ pencere.setWindowTitle("Merhaba PySide6")
 # Adım 3: Göster ve ekranın ortasına yerleştir
 pencere.show()
 
+# Ekran ortalaması:
+# 1) QApplication.primaryScreen() ile aktif ekran nesnesini alırız
+# 2) availableGeometry() ile ekranın kullanılabilir kısmının geometrisini alırız
+# 3) center() ile bu geometrinin merkez noktasını buluruz
+# 4) Pencerenin sol üst köşesini, merkez noktanın X/Y'sinden
+#    penceremizin genişliğinin / 2'sini çıkarıp yerleştiririz
+ekran = app.primaryScreen()
+ekran_geometrisi = ekran.availableGeometry()
 pencere.move(
-    QScreen().availableGeometry().center().x() - pencere.width() // 2,
-    QScreen().availableGeometry().center().y() - pencere.height() // 2
+    ekran_geometrisi.center().x() - pencere.width() // 2,
+    ekran_geometrisi.center().y() - pencere.height() // 2
 )
 
 # Döngüyü başlat
@@ -261,8 +272,9 @@ sys.exit(app.exec())
 ```
 
 > [!WARNING]
-> `QScreen` sınıfı, **PySide6.QtWidgets** değil, **PySide6.QtCore** modülünden alınır!
-> `from PySide6.QtCore import QScreen` yazmayı unutmayın.
+> `QScreen` sınıfı **boş kurucu ile oluşturulamaz** (`QScreen()` çalışmaz!).
+> Ekran nesnesini **`app.primaryScreen()`** (veya pencere için `pencere.screen()`) ile almalısınız.
+> Ayrıca `QScreen` sınıfı, **PySide6.QtGui** modülünden gelir; burada ise ihtiyacımız olan `QApplication`'a zaten `app` üzerinden eriştiğimiz için ayrı import gerekmez.
 
 ---
 

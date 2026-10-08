@@ -17,7 +17,7 @@ Bir pencereyi sadece işlevsel fonksiyonlarla yönetmek, uygulama büyüdükça 
 
 ### QMainWindow vs QWidget: Ne Zaman Hangisini Kullanmalıyız?
 
-`QWidget` en temel görsel pencere türüdür; `QMainWindow` ise daha fazla yapıya sahip bir penceredir — menü çubuğu, araç çubuğu, durum çubuğu ve中央 widget alanı gibi yerleşik bölümleri bulunur.
+`QWidget` en temel görsel pencere türüdür; `QMainWindow` ise daha fazla yapıya sahip bir penceredir — menü çubuğu, araç çubuğu, durum çubuğu ve merkez widget alanı gibi yerleşik bölümleri bulunur.
 
 | Özellik | `QWidget` | `QMainWindow` |
 |---------|-----------|---------------|
@@ -193,10 +193,12 @@ class AnaPencere(QMainWindow):
         self.show()
 
         # Ekran ortalaması:
-        from PySide6.QtCore import QScreen
-        pencere.move(
-            QScreen().availableGeometry().center().x() - self.width() // 2,
-            QScreen().availableGeometry().center().y() - self.height() // 2
+        # QScreen() doğrudan örneklenemez; pencere.screen() ile ekran alınır
+        ekran = self.screen()
+        ekran_geometrisi = ekran.availableGeometry()
+        self.move(
+            ekran_geometrisi.center().x() - self.width() // 2,
+            ekran_geometrisi.center().y() - self.height() // 2
         )
 
 # Uygulama döngüsü
@@ -236,7 +238,6 @@ Pencerenin içinde, sol üst köşesinden 150 piksel sağ ve 130 piksel aşağı
 ```python
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QLabel
-from PySide6.QtCore import QScreen
 
 class AnaPencere(QMainWindow):
     def __init__(self):
@@ -255,9 +256,12 @@ class AnaPencere(QMainWindow):
         self.show()
 
         # Ekran ortalaması:
+        # QScreen() doğrudan örneklenemez; pencere.screen() ile ekran alınır
+        ekran = self.screen()
+        ekran_geometrisi = ekran.availableGeometry()
         self.move(
-            QScreen().availableGeometry().center().x() - self.width() // 2,
-            QScreen().availableGeometry().center().y() - self.height() // 2
+            ekran_geometrisi.center().x() - self.width() // 2,
+            ekran_geometrisi.center().y() - self.height() // 2
         )
 
 # Uygulama döngüsü
@@ -282,4 +286,4 @@ sys.exit(app.exec())
   - İkinci etiket: `"İkinci Etiket"` konum (50, 250)
   - İki etiket de aynı pencere içinde, belirtilen koordinatlarda görünür.
 
-Başarıyla tamamladığınızda, OOP yapısıyla sınıf içinde birçok GUI bileşenini yönetebileceğinizi ve her birini `self.` ile sınıf içinde tutarak gerekirse başka metotlardan da erişebileceğinizi görmüş olursunuz. Bir sonraki konuda bu bileşenleri düzenli bir şekilde yerleştirmek için **layout yöneticileri** (QVBoxLayout, QHBoxLayout vb.) öğreneceğiz.
+Başarıyla tamamladığınızda, OOP yapısıyla sınıf içinde birçok GUI bileşenini yönetebileceğinizi ve her birini `self.` ile sınıf içinde tutarak gerekirse başka metotlardan da erişebileceğinizi görmüş olursunuz. Bir sonraki konuda **temel widgetların** (QLabel, QPushButton, QLineEdit) nasıl oluşturulduğunu öğreneceğiz.
