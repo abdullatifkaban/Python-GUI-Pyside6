@@ -131,4 +131,4 @@ Mevcut kodunuza ikinci bir buton ekleyin.
 - **Bağlantı (Connection):** Sinyal ile slotu birbirine bağlayan köprüdür (`.connect()`).
 
 ---
-[⬅️ Önceki Ders](Topics/02-Oop-And-Structure.md) | [Sonraki Ders ➡️](Topics/04-Layout-Management.md)
+[⬅️ Önceki Ders](02-Oop-And-Structure.md) | [Sonraki Ders ➡️](04-Layout-Management.md)

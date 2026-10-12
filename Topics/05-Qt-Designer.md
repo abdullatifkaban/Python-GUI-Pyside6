@@ -131,4 +131,4 @@ if __name__ == "__main__":
 - [pyside6-uic: .ui dosyalarını .py dosyasına dönüştürme](https://doc.qt.io/qtforpython-6/PySide6/scripts/pyside6-uic.html) (Alternatif yöntem)
 
 ---
-[⬅️ Önceki Ders](Topics/04-Layout-Management.md) | [Sonraki Ders ➡️](Topics/06-Form-Widgets.md)
+[⬅️ Önceki Ders](04-Layout-Management.md) | [Sonraki Ders ➡️](06-Form-Widgets.md)

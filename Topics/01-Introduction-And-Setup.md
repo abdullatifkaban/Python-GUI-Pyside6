@@ -133,4 +133,4 @@ Kodunuz çalıştıktan sonra şunları yaparak uygulamanın nasıl tepki verdi�
 - **QWidget**, görsel bileşenlerin temel yapı taşıdır.
 
 ---
-[⬅️ Önceki Ders](Topics/00-None.md) | [Sonraki Ders ➡️](Topics/02-Oop-And-Structure.md)
+[⬅️ Ana Sayfa](../README.md) | [Sonraki Ders ➡️](02-Oop-And-Structure.md)

@@ -249,4 +249,4 @@ if __name__ == "__main__":
 - **Uygulama Hayat Döngüsü:** `closeEvent` veya `sys.excepthook` içinde kaynakları (veritabanı bağlantısı, thread'ler) temizleyin.
 
 ---
-[⬅️ Önceki Ders](Topics/11-Multithreading-Qthread.md) | [Sonraki Ders ➡️](Topics/13-Capstone-And-Pyinstaller.md)
+[⬅️ Önceki Ders](11-Multithreading-Qthread.md) | [Sonraki Ders ➡️](13-Capstone-And-Pyinstaller.md)

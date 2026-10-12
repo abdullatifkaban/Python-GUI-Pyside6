@@ -135,4 +135,4 @@ if __name__ == "__main__":
 - [PySide6 Documentation: Layout Management](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QLayout.html)
 
 ---
-[⬅️ Önceki Ders](Topics/03-Signals-And-Slots.md) | [Sonraki Ders ➡️](Topics/05-Qt-Designer.md)
+[⬅️ Önceki Ders](03-Signals-And-Slots.md) | [Sonraki Ders ➡️](05-Qt-Designer.md)

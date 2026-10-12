@@ -108,4 +108,4 @@ Her modülü daha önceki derslerdeki bilgilerle dolduracağız. Örneğin:
 - **Dağıtım:** Oluşan `dist/` klasöründeki çalıştırılabilir dosya, Python kurulu olmayan sistemlerde çalıştırılabilir.
 
 ---
-[⬅️ Önceki Ders](Topics/12-Error-Handling-Ux.md) | [Sonraki Ders ➡️](Topics/00-None.md)
+[⬅️ Önceki Ders](12-Error-Handling-Ux.md) | [Ana Sayfa ➡️](../README.md)

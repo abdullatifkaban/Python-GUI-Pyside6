@@ -297,4 +297,4 @@ if __name__ == "__main__":
 - **CSV Dışa Aktarımı:** Python'ın `csv` modülü ile veriler `dosya.csv` olarak yazılabilir.
 
 ---
-[⬅️ Önceki Ders](Topics/09-Data-Listing-Widgets.md) | [Sonraki Ders ➡️](Topics/11-Multithreading-Qthread.md)
+[⬅️ Önceki Ders](09-Data-Listing-Widgets.md) | [Sonraki Ders ➡️](11-Multithreading-Qthread.md)

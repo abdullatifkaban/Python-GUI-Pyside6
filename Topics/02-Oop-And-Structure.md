@@ -133,4 +133,4 @@ Kodunuz çalıştıktan sonra şu değişiklikleri yapın:
 - **`QMainWindow`**, menüler ve araç çubukları gibi özellikler sunan hazır bir pencere yapısıdır.
 
 ---
-[⬅️ Önceki Ders](Topics/01-Introduction-And-Setup.md) | [Sonraki Ders ➡️](Topics/03-Signals-And-Slots.md)
+[⬅️ Önceki Ders](01-Introduction-And-Setup.md) | [Sonraki Ders ➡️](03-Signals-And-Slots.md)

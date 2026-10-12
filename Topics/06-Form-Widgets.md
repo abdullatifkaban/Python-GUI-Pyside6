@@ -186,4 +186,4 @@ Mevcut formunuzu geliştirerek aşağıdaki özellikleri ekleyin:
 - **Doğrulama (Validation):** Veriyi işlemeden önce `if` blokları ile kontrol etmek hataları önler.
 
 ---
-[⬅️ Önceki Ders](Topics/05-Qt-Designer.md) | [Sonraki Ders ➡️](Topics/07-Windows-And-Dialogs.md)
+[⬅️ Önceki Ders](05-Qt-Designer.md) | [Sonraki Ders ➡️](07-Windows-And-Dialogs.md)

@@ -157,4 +157,4 @@ Mevcut uygulamaya bir **"Temizle"** aksiyonu ekleyin.
 - [PySide6 Documentation: QFileDialog](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QFileDialog.html)
 
 ---
-[⬅️ Önceki Ders](Topics/06-Form-Widgets.md) | [Sonraki Ders ➡️](Topics/08-Qss-And-Styling.md)
+[⬅️ Önceki Ders](06-Form-Widgets.md) | [Sonraki Ders ➡️](08-Qss-And-Styling.md)

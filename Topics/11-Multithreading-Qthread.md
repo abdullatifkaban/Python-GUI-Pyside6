@@ -228,4 +228,4 @@ if __name__ == "__main__":
 - **İptal:** Güvenli iptal için Worker içinde bayrak kontrolü kullanılabilir.
 
 ---
-[⬅️ Önceki Ders](Topics/10-Data-And-Sqlite.md) | [Sonraki Ders ➡️](Topics/12-Error-Handling-Ux.md)
+[⬅️ Önceki Ders](10-Data-And-Sqlite.md) | [Sonraki Ders ➡️](12-Error-Handling-Ux.md)

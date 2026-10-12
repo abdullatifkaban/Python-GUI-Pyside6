@@ -378,4 +378,4 @@ if __name__ == "__main__":
 - **Tema geçişi**, farklı QSS string'lerini çalışma zamanında yükleyerek elde edilir.
 
 ---
-[⬅️ Önceki Ders](Topics/07-Windows-And-Dialogs.md) | [Sonraki Ders ➡️](Topics/09-Data-Listing-Widgets.md)
+[⬅️ Önceki Ders](07-Windows-And-Dialogs.md) | [Sonraki Ders ➡️](09-Data-Listing-Widgets.md)

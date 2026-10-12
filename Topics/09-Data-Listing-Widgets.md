@@ -252,4 +252,4 @@ Uygulamaya bir **"Arama"** özelliği ekleyin.
 - **Yardımcı Metotlar**: `insertRow`, `removeRow`, `rowCount`, `setRowHidden`.
 
 ---
-[⬅️ Önceki Ders](Topics/08-Qss-And-Styling.md) | [Sonraki Ders ➡️](Topics/10-Data-And-Sqlite.md)
+[⬅️ Önceki Ders](08-Qss-And-Styling.md) | [Sonraki Ders ➡️](10-Data-And-Sqlite.md)
