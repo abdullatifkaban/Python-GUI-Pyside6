@@ -1,248 +1,189 @@
-# 06 - Temel Form Elemanları
+# Temel Form Elemanları
 
-## 1. Temel Form Elemanları — Kavramsal Temeller
+## 🎯 Bu Derste Ne Öğreneceğiz?
 
-Masaüstü uygulamalarında kullanıcıdan veri almak için **form elemanları** kullanılır. Günlük hayatta bir form doldururken adını yazmak, cinsiyetini seçmek, yaşını belirtmek gibi işlemler yaparız; PySide6'te de bu işlemler için özel widget'lar sağlanır. Bu widget'lar sayesinde kullanıcıyla etkileşim kurulur, girişler alınır ve işlenir.
+Bu dersin sonunda aşağıdaki yetkinliklere sahip olacaksınız:
 
-### Metin Girdileri: QLineEdit ve QTextEdit
+- Kullanıcıdan farklı veri türlerini almak için uygun widget'ları (`QLineEdit`, `QTextEdit`, `QCheckBox`, `QRadioButton`, `QComboBox`, `QSpinBox`) seçebilmek.
+- Form elemanlarından gelen verileri Python koduna çekebilmek.
+- Kullanıcı hatalarını önlemek için basit veri doğrulama (validation) tekniklerini uygulayabilmek.
+- Form elemanlarını mantıksal gruplar halinde düzenleyebilmek.
 
-Metin girişi için iki temel widget vardır: tek satırlı giriş için `QLineEdit`, çok satırlı giriş için `QTextEdit`. `QLineEdit` tek bir satır alırken, `QTextEdit` birden fazla satır ve riche text desteği sunar.
+## 💡 Neden Bu Konuyu Öğreniyoruz?
 
-| Özellik | `QLineEdit` | `QTextEdit` |
-|---------|-------------|-------------|
-| Satır sayısı | Tek satır | Çok satırlı |
-| Kullanım alanı | İsim, e-posta, şifre gibi kısa metinler | Açıklama, not, mesaj gibi uzun metinler |
-| Rich text desteği | Yok | Var (HTML desteği) |
+Bir uygulamanın kullanıcıyla konuştuğu en temel yer **formlardır**. Bir kullanıcı adı istemek, bir onay kutusuyla sözleşmeyi kabul ettirmek veya bir sayı seçtirmek... Eğer yanlış widget seçerseniz, kullanıcı deneyimi (UX) kötüleşir. 
+
+Örneğin; tek bir kelimelik isim girişi için devasa bir metin alanı (`QTextEdit`) kullanmak, kullanıcının kafasını karıştırır ve "buraya çok fazla şey yazabilirim" algısı yaratarak hatalara yol açar. Doğru bileşeni doğru amaçla kullanmak, profesyonel bir arayüzün ilk kuralıdır.
+
+## 🔍 Birlikte Keşfedelim
+
+Bir otel kayıt formunu hayal edin. Formdaki her alan farklı bir "veri tipi" gerektirir:
+
+1.  **İsim-Soyisim:** Kısa, tek satırlık bir cevap.
+2.  **Adres/Notlar:** Uzun, birden fazla satıra yayılan bir cevap.
+3.  **Cinsiyet:** Sadece bir seçenek seçilebilen bir durum.
+4.  **Oda Tipi:** Bir listeden seçim yapılması gereken bir durum.
+5.  **Kişi Sayısı:** Sadece belirli sayı aralıklarında (örn: 1-5) girilebilen bir değer.
+
+Her birinin karşılığı, PySide6 dünyasında farklı bir widget'tır.
 
 > [!NOTE]
-> `QLineEdit` genellikle formlarda tek satırlık alanlar için tercih edilirken, `QTextEdit` daha uzun açıklamalar veya notlar için kullanılır.
+> Yanlış widget seçimi sadece estetik bir sorun değildir; aynı zamanda verinin tipini (string, int, bool) yönetirken kodunuzun hata vermesine de neden olabilir.
 
-### Seçim Bileşenleri: QCheckBox ve QRadioButton (Group Box Mantığı)
+## 🛠️ Uygulama
 
-Kullanıcıdan seçim almak için `QCheckBox` (onay kutusu) ve `QRadioButton` (seçenek düğmesi) kullanılır. `QCheckBox` tek başına veya bir grup içinde işaretlenebilirken, `QRadioButton` genellikle bir grup içinde yalnızca bir seçeneğin seçilebilmesini sağlar.
+Bu derste, bir "Kullanıcı Kayıt Formu" inşa edeceğiz.
 
-> [!TIP]
-> `QRadioButton`'ları aynı grup içinde kullanmak için genellikle `QGroupBox` veya sadece aynı mantıksal gruba bağlayarak çalışırız; Qt'de radio buttonlar otomatik olarak aynı parent içinde tek seçim zorunluluğunu uygular.
+### Adım 1: Widget Seçimi ve Oluşturma
 
-### Açılır Listeler ve Sayısal Girdiler: QComboBox ve QSpinBox
+Aşağıdaki tablodaki eşleşmeleri kullanarak bileşenlerimizi tanımlayacağız:
 
-Seçim yapmak için liste sunmak istersek `QComboBox` (açılır liste) kullanırız. Sayısal girişler için ise artırma ve azaltma düğmeleri olan `QSpinBox` ya da ondalıklar için `QDoubleSpinBox` kullanılır.
+| Veri Türü | PySide6 Widget'ı | Kullanım Amacı |
+| :--- | :--- | :--- |
+| Tek satır metin | `QLineEdit` | İsim, e-posta, şifre gibi kısa girdiler. |
+| Çok satırlı metin | `QTextEdit` | Adres, biyografi gibi uzun metinler. |
+| Onay/Seçim | `QCheckBox` | "Şartları kabul ediyorum" gibi evet/hayır durumları. |
+| Tekli seçim | `QRadioButton` | "Erkek/Kadın" gibi birbirini dışlayan seçenekler. |
+| Liste seçimi | `QComboBox` | "Şehir seçiniz" gibi hazır listeden seçimler. |
+| Sayısal değer | `QSpinBox` | Yaş, adet gibi belirli aralıktaki sayılar. |
 
-| Özellik | `QComboBox` | `QSpinBox` |
-|---------|-------------|------------|
-| Giriş tipi | Seçim listesi | Sayısal artırma/azaltma |
-| Kullanım alanı | Ülke, şehir, kategori gibi önceden tanımlı seçenekler | Yaş, sayı, miktar gibi sayısal değerler |
-| Özelleştirme | Metin ve simge eklenebilir | Minimum, maksimum, adım ayarlaması |
+### Adım 2: Formu İnşa Etme ve Veri Okuma
 
-> [!IMPORTANT]
-> `QSpinBox` ile minimum ve maksimum değerleri sınırlayarak geçersiz girişleri önleyebiliriz; bu da doğrulama işlemini kolaylaştırır.
-
-### Kullanıcı Girdilerini Doğrulama (Validation)
-
-Kullanıcıdan gelen verilerin boş olmaması, belirli bir formatta olması veya sayısal bir aralıkta olması gibi koşulları kontrol etmek **doğrulama** (validation) denir. Form gönderilmeden önce bu kontroller yapılır; geçersiz veri girişinde kullanıcıya uygun uyarı mesajları gösterilir.
-
-> [!WARNING]
-> Boş bırakılamayan alanlar için `isEmpty()` kontrolü, e-posta formatı için düzenli ifadeler, sayısal alanlar için `value()` ile minimum/maksimum karşılaştırmaları yaygın olarak kullanılır.
-
-## 2. Adım Adım Kod Uygulaması
-
-> **Senaryo:** Basit bir kullanıcı formu oluşturacağız. Bu formda ad soyad için `QLineEdit`, cinsiyet için `QRadioButton` grubu, Ülke seçimi için `QComboBox` ve bir not alanı için `QTextEdit` yer alacak. Kullanıcı "Kaydet" butonuna bastığında girilen bilgiler okuyup konsola yazdırılacak. Ayrıca zorunlu alanların boş bırakılmaması kontrol edilecek; boş bırakılırsa uyarı penceresi gösterilecek. Son olarak, formun kullanımını göstermek adına `QSpinBox` ile yaş seçimi eklenecek ve yaş bilgisi de özetle dahil edilecektir.
-
-> [!TIP]
-> Bu adımları VS Code'daki `main.py` dosyasında uygulayarak, her adımda dosyayı kaydedip `python main.py` komutuyla terminalde anlık sonuçları görebilirsiniz.
-
----
-
-### Adım 1: Form elemanlarını (QLineEdit, QCheckBox, QComboBox) içeren bir arayüz düzeni kurma
-
-#### Eklenecek Kod
+Aşağıdaki kod, bu bileşenleri bir araya getirir ve "Kaydet" butonuna basıldığında verileri konsola yazdırır.
 
 ```python
 import sys
-from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget,
-    QLabel, QLineEdit, QRadioButton,
-    QComboBox, QTextEdit, QPushButton,
-    QVBoxLayout, QHBoxLayout, QGroupBox,
-    QMessageBox, QSpinBox
-)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+                             QLineEdit, QTextEdit, QCheckBox, QRadioButton, 
+                             QComboBox, QSpinBox, QPushButton, QLabel)
 
-class AnaPencere(QMainWindow):
+class KayitFormu(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Kullanıcı Formu")
-        self.resize(500, 400)
-        self.init_ui()
+        self.initUI()
 
-    def init_ui(self):
-        # Merkez widget ve ana dikey layout
-        merkez = QWidget()
-        self.setCentralWidget(merkez)
-        ana_layout = QVBoxLayout(merkez)
+    def initUI(self):
+        self.setWindowTitle("Kullanıcı Kayıt Formu")
+        self.resize(350, 500)
 
-        # ---- Ad Soyad alanı ----
-        ad_soyad_layout = QHBoxLayout()
-        ad_soyad_layout.addWidget(QLabel("Ad Soyad:"))
-        self.ad_soyad_input = QLineEdit()
-        ad_soyad_layout.addWidget(self.ad_soyad_input)
-        ana_layout.addLayout(ad_soyad_layout)
+        # Merkezi alan ve Layout
+        self.merkezi_alan = QWidget()
+        self.setCentralWidget(self.merkezi_alan)
+        self.layout = QVBoxLayout(self.merkezi_alan)
 
-        # ---- Cinsiyet seçimi (QRadioButton) ----
-        cinsiyet_grup = QGroupBox("Cinsiyet")
-        cinsiyet_layout = QHBoxLayout()
-        self.erkek_rb = QRadioButton("Erkek")
-        self.kadin_rb = QRadioButton("Kadın")
-        self.erkek_rb.setChecked(True)  # varsayılan
-        cinsiyet_layout.addWidget(self.erkek_rb)
-        cinsiyet_layout.addWidget(self.kadin_rb)
-        cinsiyet_grup.setLayout(cinsiyet_layout)
-        ana_layout.addWidget(cinsiyet_grup)
+        # 1. İsim (QLineEdit)
+        self.layout.addWidget(QLabel("Ad Soyad:"))
+        self.input_isim = QLineEdit()
+        self.layout.addWidget(self.input_isim)
 
-        # ---- Ülke seçimi (QComboBox) ----
-        ulke_layout = QHBoxLayout()
-        ulke_layout.addWidget(QLabel("Ülke:"))
-        self.ulke_combo = QComboBox()
-        self.ulke_combo.addItems(["Türkiye", "Almanya", "Fransa", "İtalya", "İspanya"])
-        ulke_layout.addWidget(self.ulke_combo)
-        ana_layout.addLayout(ulke_layout)
+        # 2. Notlar (QTextEdit)
+        self.layout.addWidget(QLabel("Notlar:"))
+        self.input_notlar = QTextEdit()
+        self.layout.addWidget(self.input_notlar)
 
-        # ---- Not alanı (QTextEdit) ----
-        not_layout = QHBoxLayout()
-        not_layout.addWidget(QLabel("Not:"))
-        self.not_input = QTextEdit()
-        self.not_input.setFixedHeight(80)
-        not_layout.addWidget(self.not_input)
-        ana_layout.addLayout(not_layout)
+        # 3. Cinsiyet (QRadioButton)
+        self.layout.addWidget(QLabel("Cinsiyet:"))
+        self.rb_erkek = QRadioButton("Erkek")
+        self.rb_kadin = QRadioButton("Kadın")
+        self.layout.addWidget(self.rb_erkek)
+        self.layout.addWidget(self.rb_kadin)
 
-        # ---- Yaş seçimi (QSpinBox) ----
-        yas_layout = QHBoxLayout()
-        yas_layout.addWidget(QLabel("Yaş:"))
-        self.yas_spin = QSpinBox()
-        self.yas_spin.setRange(0, 120)
-        self.yas_spin.setValue(25)
-        yas_layout.addWidget(self.yas_spin)
-        ana_layout.addLayout(yas_layout)
+        # 4. Şehir (QComboBox)
+        self.layout.addWidget(QLabel("Şehir:"))
+        self.combo_sehir = QComboBox()
+        self.combo_sehir.addItems(["İstanbul", "Ankara", "İzmir", "Bursa"])
+        self.layout.addWidget(self.combo_sehir)
 
-        # ---- Kaydet butonu ----
-        self.kaydet_btn = QPushButton("Kaydet")
-        self.kaydet_btn.clicked.connect(self.formu_kaydet)
-        ana_layout.addWidget(self.kaydet_btn)
+        # 5. Yaş (QSpinBox)
+        self.layout.addWidget(QLabel("Yaş:"))
+        self.spin_yas = QSpinBox()
+        self.spin_yas.setRange(1, 120) # Yaş aralığı sınırlama
+        self.layout.addWidget(self.spin_yas)
 
-    def formu_kaydet(self):
-        # Form verilerini oku
-        ad_soyad = self.ad_soyad_input.text().strip()
-        cinsiyet = "Erkek" if self.erkek_rb.isChecked() else "Kadın"
-        ulke = self.ulke_combo.currentText()
-        not_text = self.not_input.toPlainText().strip()
-        yas = self.yas_spin.value()
+        # 6. Onay (QCheckBox)
+        self.check_onay = QCheckBox("Kullanım şartlarını kabul ediyorum.")
+        self.layout.addWidget(self.check_onay)
 
-        # Basit doğrulama: zorunlu alanlar
-        if not ad_soyad:
-            QMessageBox.warning(self, "Eksik Bilgi", "Ad Soyad alanı boş bırakılamaz!")
+        # 7. Kaydet Butonu
+        self.btn_kaydet = QPushButton("Kaydet")
+        self.btn_kaydet.clicked.connect(self.verileri_oku)
+        self.layout.addWidget(self.btn_kaydet)
+
+    def verileri_oku(self):
+        # Verileri çekme
+        isim = self.input_isim.text()
+        notlar = self.input_notlar.toPlainText()
+        cinsiyet = "Erkek" if self.rb_erkek.isChecked() else "Kadın"
+        sehir = self.combo_sehir.currentText()
+        yas = self.spin_yas.value()
+        onay = self.check_onay.isChecked()
+
+        # Basit Doğrulama (Validation)
+        if not isim:
+            print("HATA: İsim alanı boş bırakılamaz!")
             return
-        if not ulke:
-            QMessageBox.warning(self, "Eksik Bilgi", "Ülke seçimi yapmalısınız!")
+        
+        if not onay:
+            print("HATA: Şartları kabul etmelisiniz!")
             return
 
-        # Form özetini konsola yazdır
-        print("--- Form Bilgileri ---")
-        print(f"Ad Soyad: {ad_soyad}")
-        print(f"Cinsiyet: {cinsiyet}")
-        print(f"Ülke: {ulke}")
+        # Sonucu konsola yazdır
+        print("--- Yeni Kayıt ---")
+        print(f"İsim: {isim}")
         print(f"Yaş: {yas}")
-        print(f"Not: {not_text}")
-        print("----------------------")
+        print(f"Cinsiyet: {cinsiyet}")
+        print(f"Şehir: {sehir}")
+        print(f"Notlar: {notlar}")
+        print(f"Onaylandı mı?: {onay}")
+        print("------------------")
 
-        # Bilgilendirme penceresi
-        QMessageBox.information(
-            self,
-            "Başarılı",
-            f"Form bilgileri alındı:\nAd Soyad: {ad_soyad}\nÜlke: {ulke}\nYaş: {yas}"
-        )
+def main():
+    app = QApplication(sys.argv)
+    pencere = KayitFormu()
+    pencere.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
 ```
 
-#### Kod Analizi
+## 🧪 Deneyelim ve Gözlemleyelim
 
-- **İçe aktarmeler:** PySide6'nın gerekli widget sınıflarını alırız; `QLineEdit`, `QRadioButton`, `QComboBox`, `QTextEdit`, `QSpinBox` ve layout yöneticileri.
-- **AnaPencere sınıfı:** `QMainWindow`'dan miras alır; pencereyi kurmak için `init_ui()` metodu çağırılır.
-- **`init_ui()` metodu:** 
-  - Merkez widget (`QWidget`) ve dikey bir `QVBoxLayout` oluşturur.
-  - Her bir form alanı için yatay layout (`QHBoxLayout`) kullanılır; etiket (`QLabel`) ve giriş widget'ı yan yana eklenir.
-  - Cinsiyet için `QGroupBox` içinde iki `QRadioButton` yer alır; varsayılan olarak "Erkek" işaretli.
-  - Ülke seçimi için `QComboBox` kullanılır; örnek bir ülke listesi eklenir.
-  - Not alanı için çok satırlı `QTextEdit` yüksekliği 80 piksele sabitlenir.
-  - Yaş seçimi için `QSpinBox` kullanılır; minimum 0, maksimum 120, varsayılan 25.
-  - "Kaydet" butonu oluşturulur ve `clicked` sinyali `formu_kaydet` slotuna bağlanır.
-- **`formu_kaydet()` metodu:** 
-  - Form elemanlarından metinleri alır (`text()`, `currentText()`, `toPlainText()`, `value()`).
-  - `strip()` ile baş ve sondaki bozukluklar temizlenir.
-  - Zorunlu alanlar (`ad_soyad`, `ulke`) boş ise `QMessageBox.warning` ile kullanıcı uyarılır ve fonksiyon erken dönüş yapar.
-  - Geçerli veri varsa konsola neatly biçimlendirilen özet yazdırılır.
-  - Başarılı girişte `QMessageBox.information` ile onay mesajı gösterilir.
+1.  **Boş Bırakma Testi:** İsim kısmını boş bırakıp "Kaydet"e basın. Konsolda ne görüyorsunuz?
+2.  **Sayı Sınırı:** `QSpinBox` (Yaş) bileşeninde 120'den büyük bir sayı girmeye çalışın. Uygulama buna izin veriyor mu?
+3.  **Metin Tipi:** `QLineEdit` içine çok uzun bir paragraf yapıştırmayı deneyin. `QTextEdit` ile farkı nedir?
 
-#### Görsel / İşlevsel Sonuç
+## 🧠 Kendini Test Et
 
-```
-Ekranda "Kullanıcı Formu" başlıklı bir pencere görünür.
-Pencerenin içinde:
-- Üstte "Ad Soyad:" etiketi ve tek satırlık giriş kutusu (QLineEdit)
-- Ardından "Cinsiyet:" grubu içinde iki radyo düğmesi (Erkek, Kadın)
-- Sonra "Ülke:" etiketi ve açılır liste (QComboBox)
-- Daha sonra "Not:" etiketi ve çok satırlık metin kutusu (QTextEdit)
-- Son olarak "Yaş:" etiketi ve artırma/azaltma düğmeleri olan sayaç kutusu (QSpinBox)
-- En altta "Kaydet" butonu bulunur.
+1. **Soru:** Kullanıcının sadece sayı girmesini istediğimiz bir alan için hangi widget en uygundur?
+2. **Soru:** `QRadioButton` ve `QCheckBox` arasındaki temel fark nedir?
 
-Kullanıcı Ad Soyad girer, bir cinsiyet seçer, bir ülke seçer, isteğe bağlı not yazar ve yaşı ayarlar.
-"Kaydet" butonuna tıklandığında:
-- Eğer Ad Soyad veya Ülke boş bırakılmışsa, uyarı penceresi gösterilir.
-- Aksi takdirde, girilen bilgiler konsola şu şekilde basılır:
-  --- Form Bilgileri ---
-  Ad Soyad: Ahmed Yılmaz
-  Cinsiyet: Kadın
-  Ülke: Türkiye
-  Yaş: 30
-  Not: Bu bir test notudur.
-  ----------------------
-- Ayrıca bilgilendirme penceresi ile girişin alındığına dair onay verilir.
-```
+<details>
+<summary>Cevapları göster</summary>
+
+1. **Cevap:** `QSpinBox` veya `QDoubleSpinBox` (ondalıklı sayılar için).
+2. **Cevap:** `QRadioButton` kullanıldığında, aynı grup içinden sadece **bir** seçenek seçilebilir. `QCheckBox` ise kullanıcının birden fazla seçeneği aynı anda işaretlemesine izin verir.
+
+</details>
+
+## 🚀 Kendin Dene
+
+**Görev:**
+Mevcut formunuzu geliştirerek aşağıdaki özellikleri ekleyin:
+1.  **E-posta Alanı:** Bir `QLineEdit` ekleyin.
+2.  **Basit Doğrulama:** Eğer e-posta alanı boşsa veya içinde `@` karakteri yoksa, konsola "Geçersiz E-posta!" yazdırın ve kaydı durdurun.
+3.  **Görsel İpucu:** `QLineEdit` için `setPlaceholderText("Örn: kullanıcı@mail.com")` metodunu kullanarak kullanıcıya ne yazması gerektiğini gösterin.
+
+## 📚 Daha Fazlasını Öğrenmek
+
+- [PySide6 Documentation: QLineEdit](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QLineEdit.html)
+- [PySide6 Documentation: QSpinBox](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QSpinBox.html)
+
+## 📝 Kısa Özet
+
+- **Doğru Widget Seçimi:** Verinin türüne göre (metin, sayı, seçim) uygun bileşeni kullanmak UX için kritiktir.
+- **Veri Alma:** `text()`, `toPlainText()`, `value()`, `isChecked()` ve `currentText()` metotları ile verileri okuruz.
+- **Doğrulama (Validation):** Veriyi işlemeden önce `if` blokları ile kontrol etmek hataları önler.
 
 ---
-
-### Adım 2: Formdaki verileri okuyan bir "Kaydet" butonu ve okuma fonksiyonu yazma
-
-Kullanıcı tarafından doldurulan form verilerini toklamak ve işlemek için bir buton ve bu butona bağlı bir slot (fonksiyon) gereklidir. Daha önceki kodda zaten `self.kaydet_btn` butonu ve `self.formu_kaydet` metodu oluşturulmuştur; bu bölümde bu mekanizmanın işleyişini daha net bir şekilde açıklıyoruz.
-
-Butonun `clicked` sinyali, kullanıcı farla butona bastığında tetiklenir. Bu sinyal, `self.formu_kaydet` metodunu çalıştırır; metod içindeki kodlar form elemanlarındaki mevcut değerleri okur, doğrular ve gerekli işlemleri yapar. Böylece arayüz ile mantık ayrı ayrı yönetilir, kodun okunabilirliği artar.
-
-> [!TIP]
-> Slot fonksiyonları (`self.formu_kaydet` gibi) genellikle `self.` ön ekiyle tanımlanır; böylece sınıfın diğer metotları ve özelliklerine (örneğin `self.ad_soyad_input`) kolayca erişebiliriz.
-
-> [!WARNING]
-> Slot fonksiyonu içinde uzun süren işlemler yapmamalıdır; arayüzü donar (bloklar). Uzun işler gerekirse `QThread` kullanılarak arka plana alınmalıdır.
-
-#### Doğrulama Mantığı
-
-`formu_kaydet` metodunda gördüğümüz gibi, `if not ad_soyad:` kontrolü boş bırakılamayan alani yakalar. Benzer şekilde `if not ulke:` kontrolü de zorunlu bir seçim yapmadığı durumu yakalar. Bu tür kontroller, kullanıcıya geri bildirim vermek için `QMessageBox.warning` veya `QMessageBox.critical` ile gösterilebilir.
-
-> [!NOTE]
-> Gerçek uygulamalarda e-posta doğrulama gibi daha karmaşık kontroller için düzenli ifadeler (`re` modülü) kullanılabilir; ancak bu ders seviyesinde temel boşluk ve seçim kontrolleri yeterlidir.
-
----
-
-### Adım 3: QLineEdit boş bırakıldığında veya seçim yapılmadığında kullanıcıya uyarı gösteren doğrulama mantığı ekleme
-
-Bir form doldururken zorunlu alanları boş bırakmaya çalıştığımızda, genellikle formun altına kırmızı bir mesaj pojawır veya bir uyarı penceresi çıkar. PySide6'te bu uyarı mekanizması `QMessageBox` ile taklit edilir.
-
-Kullanıcı `Ad Soyad` kutusuna hiçbir şey yazmazsa veya `Ülke` açılır listesinde bir seçenek seçmezse, `QMessageBox.warning` ile bilgilendirici bir uyarı penceresi gösterilir ve işlem durdurulur (`return`). Böylece eksik verinin işlenmesi önlenir.
-
-> [!IMPORTANT]
-> Uyarı mesajlarının metni kısa ve net olmalı; kullanıcı neyin eksik olduğunu anlayabilmelidir. Örneğin "Ad Soyad alanı boş bırakılamaz!" gibi bir mesaj hem tanımlayıcı hem de yönlendiricidir.
-
-## 3. Sıra Sende (Pekiştirme Görevi)
-
-- **Görev:** Forma `QSpinBox` (Yaş seçimi) ekleyip gelen veriyi form özetine dahil etme. Yaş değerini 0‑120 arasında tutacak şekilde sınırlayıp, yaş kutusunun varsayılan değerini 18 yapın.
-- **İpucu:** `self.yas_spin.setRange(0, 120)` ve `self.yas_spin.setValue(18)` satırlarını `init_ui()` metodunun `yas_layout` kısmına ekleyin.
-- **Beklenen Çıktı:** Kodu çalıştırdığınızda, yaş kutusunun minimale 0, maksimum 120 ve başlangıç değeri 18 olan bir `QSpinBox` görürünüz. Yaşı değiştirip "Kaydet" butonuna bastığınızda, konsol çıktısında yaş değeri doğru şekilde görünmelidir.
-
-> [!TIP]
-> Yaş kutusunun değerini `self.yas_spin.value()` şeklinde alarak form özetine ekleyebilirsiniz; bu zaten `formu_kaydet` metodunda yapılmıştır.
+[⬅️ Önceki Ders](Topics/05-Qt-Designer.md) | [Sonraki Ders ➡️](Topics/07-Windows-And-Dialogs.md)

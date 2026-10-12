@@ -1,439 +1,381 @@
-# 08 - Stil ve Özelleştirme (QSS)
+# Stil ve Özelleştirme (QSS)
 
-## 1. Stil ve Özelleştirme (QSS) — Kavramsal Temeller
+## 🎯 Bu Derste Ne Öğreneceğiz?
 
-PySide6 uygulamalarının görünümünü özelleştirmek için **Qt Style Sheets (QSS)** kullanılır. QSS, CSS'e benzer bir sözdizimiyle widget'ların renkleri, kenarlıkları, yazı tipleri ve durum stilleri gibi özelliklerini değiştirmeye olanak tanır. Böylece uygulama tutarlı ve çekici bir görünüme kavuşur; ayrıca koyu ve açık tema geçişleri gibi dinamik değişiklikler kolayca yapılabilir.
+Bu dersin sonunda aşağıdaki yetkinliklere sahip olacaksınız:
 
-### Qt Style Sheets (QSS) Nedir? CSS ile Benzerlikleri ve Farkları
+- **Qt Style Sheets (QSS)** nedir ve CSS ile ne kadar benzer olduğunu açıklayabilmek.
+- `setStyleSheet()` metodu ile tek bir bileşene veya tüm uygulamaya stil uygulayabilmek.
+- QSS sözdizimini kullanarak seçiciler (selector) ve durum sınıfları (`:hover`, `:pressed`, `:disabled`) tanımlayabilmek.
+- Harici `.qss` dosyaları oluşturup uygulamanıza temalandırma (theming) yapabilmek.
+- Koyu ve açık tema arasında dinamik geçiş yapan bir uygulama geliştirebilmek.
 
-QSS, PySide6'te widget'ların görünümünü tanımlamak için kullanılan bir stillendirme dili olup, yapı ve sözdizimi açısından CSS'e benzer. Ancak bazı farklar vardır; örneğin Qt'ye özgü seçiciler ve durum pseudosınıfları (`:hover`, `:pressed`, `:disabled`) mevcuttur.
+## 💡 Neden Bu Konuyu Öğreniyoruz?
+
+Şu ana kadar oluşturduğumuz uygulamalar, varsayılan işletim sistemi temasına benziyordu. Ancak modern uygulamalar, marka kimliğini yansıtmak, kullanıcı deneyimini iyileştirmek veya sadece göz alıcı olmak için özel renkler, fontlar ve efektler kullanır.
+
+Eğer her butonun rengini, kenarlık uzunluğunu veya fare üzerine geldiğinde değişmesini tek tek kodla ayarlamaya kalkarsanız, kodunuz hızla karışık ve okunmaz hale gelir. **Qt Style Sheets (QSS)**, bu stil tanımlarını HTML/CSS'de yaptığımız gibi, ayrı bir "stil sayfasında" toplamamızı sağlar. Bu sayede:
+1.  **Ayrıştırma:** Görsel tasarım (stil) ile iş mantığı (mantık) ayrı tutulur.
+2.  **Tekrar Kullanılabilirlik:** Aynı stil birden fazla bileşende uygulanabilir.
+3.  **Dinamik Değiştirme:** Uygulama çalışırken stil değiştirilebilir (örneğin koyu/ açık tema geçişi).
+
+## 🔍 Birlikte Keşfedelim
+
+Bir web sayfasını düşünün. HTML sayfası sadece yapıyı (başlıklar, paragraflar, butonlar) tanımlar. Bu yapının nasıl görüneceği ise ayrı bir CSS dosyasıyla belirlenir. Renkler, fontlar, boşluklar ve efektler tümünde CSS içerisindedir.
+
+Qt ile de aynı mantık geçerlidir. QSS, Qt bileşenlerinizin (butonlar, etiketler, metin kutuları vb.) nasıl görüneceğini tanımlayan stil dili-dir.
 
 > [!NOTE]
-> QSS, `setStyleSheet()` metodu ile tek bir widget veya整个 uygulama için uygulanabilir. Harici `.qss` dosyaları da yüklenerek stiller merkezi bir yerden yönetilebilir.
+> QSS, CSS'e çok benzer olduğundan, web deneyiminiz olanlar için çok kolay öğrenilebilir. Ancak bazı farklar vardır (örneğin Qt-specific seçiciler ve durum sınıfları).
 
-### setStyleSheet() Metodu ile Eleman Bazlı Stil Verme
+## 🛠️ Uygulama
 
-`setStyleSheet()` metodu, bir widget'ın stilini doğrudan değiştirmek için kullanılır. Bu metodu bir widget'ın örnek üzerinden çağırarak sadece o widget'ı etkileyen stiller tanımlayabiliriz; aynı stilin başka widget'lara uygulanması isteniyorsa her birine ayrı ayrı veya merkezi bir şekilde uygulanmalıdır.
+Bu derste, basit bir giriş formunu adım adım stilize edeceğiz. İlk olarak düz kodla başlayıp, sonrada harici bir `.qss` dosyası kullanarak temaya geçeceğiz.
 
-| Özellik | Açıklama |
-|---------|----------|
-| Kapsam | Tek bir widget veya tüm uygulama |
-| Yazım Yeri | Python kodu içinde doğrudan veya harici `.qss` dosyası |
-| Dinamiklik | Çalışma zamanında değiştirilebilir |
-| Kalıtım | Alt widget'lar üst widget'ın stilinden etkilenebilir (CSS benzeri kalıtım) |
+### Adım 1: Düz QSS ile Stil Verme (setStyleSheet)
 
-> [!TIP]
-> Stil değişikliklerini `setStyleSheet()` ile yaparken, mevcut stilin üzerine yazılır; eski stilin korunması isteniyorsa önceki stil bilgisi saklanıp birleştirilmelidir.
-
-### QSS Sözdizimi: Selector, State Pseudoclass (:hover, :pressed, :disabled)
-
-QSS'te stiller, **seçiciler** (selector) ve **durum pseudosınıfları** (state pseudoclass) ile tanımlanır. Seçiciler hangi widget'ların etkilenmesini belirler; durum pseudosınıfları ise widget'ın belirli bir durumunda (fare üzeri, basılı, devre dışı) uygulanacak stilleri belirtir.
-
-| Selector | Açıklama |
-|----------|----------|
-| `QPushButton` | Tüm `QPushButton` widget'ları |
-| `QPushButton#okButton` | `objectName`'i `okButton` olan `QPushButton` |
-| `QPushButton[flat="true"]` | `flat` özelliği `true` olan `QPushButton` |
-| `QPushButton:hover` | Fare üstünde olan `QPushButton` |
-| `QPushButton:pressed` | Basılı olan `QPushButton` |
-| `QPushButton:disabled` | Devre dışı bırakılmış `QPushButton` |
-
-> [!WARNING]
-> State pseudoclass'lar seçiciye directamente eklenmelidir; boşluk bırakılmamalıdır. Örneğin `QPushButton :hover` geçersizdir; doğru kullanım `QPushButton:hover` olur.
-
-### Harici .qss Dosyalarını Okuma ve Uygulama
-
-Stilleri har bir `.qss` dosyasında tutmak, kodla stil ayırmak ve daha temiz bir yapı sağlamak için uygundur. Bu dosya, çalışma zamanında okunarak `setStyleSheet()` metodu ile uygulanır.
-
-> [!IMPORTANT]
-> Harici `.qss` dosyası okunurken dosya yolunun mutlak veya çalışma dizinine göreceli olduğundan emin olun; aksi takdirde `FileNotFoundError` ile karşılaşılır.
-
-### Koyu/Açık Tema (Dark/Light Mode) Geçiş Mantığı
-
-Uygulamada tema geçişi yapmak için iki farklı `.qss` dosyası hazırlanabilir: birisi koyu tema, diğeri açık tema için. Kullanıcı bir geçiş butonu (toggle) ile temayı değiştirdiğinde, ilgili `.qss` dosyası yeniden yüklenip `setStyleSheet()` ile uygulanır. Böylece tüm uygulamanın görünümü anında güncellenir.
-
-> [!TIP]
-> Tema geçişini yaparken, eski stilin tamamen kaldırılması gerekebilir; bunun için önce boş bir string (`""`) ile stil sıfırlanabilir, ardından yeni stil uygulanabilir.
-
-## 2. Adım Adım Kod Uygulaması
-
-> **Senaryo:** Bir buton ve bir metin kutusu (`QLineEdit`) üzerinde stil uygulayacağız. İlk olarak doğrudan kod içinde `setStyleSheet()` ile renk ve kenarlık vermeyi göreceğiz. Daha sonra `:hover` ve `:pressed` durumları için efektler tanımlayacağız. Son olarak harici bir `style.qss` dosyası oluşturup tüm uygulamaya uygulayacağız. Görev olarak da bir geçiş butonu (toggle) ekleyerek uygulamanın temasını koyu ve açık arasında değiştireceğiz.
-
-> [!TIP]
-> Bu adımları VS Code'daki `main.py` dosyasında uygulayarak, her adımda dosyayı kaydedip `python main.py` komutuyla terminalde anlık sonuçları görebilirsiniz.
-
----
-
-### Adım 1: Buton ve metin kutusuna doğrudan kod içinde setStyleSheet() ile renk ve kenarlık verme
-
-#### Eklenecek Kod
+Öncelikle, bir buton ve bir metin kutusuna doğrudan kod içinde stil vererek başlayalım.
 
 ```python
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QVBoxLayout
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
+                             QVBoxLayout, QLineEdit, QPushButton, QLabel)
 
-class AnaPencere(QWidget):
+class StilUygulamasi(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("QSS Örneği - Temel Stil")
-        self.resize(300, 150)
+        self.initUI()
 
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+    def initUI(self):
+        self.setWindowTitle("QSS ile Stil Uygulaması")
+        self.resize(300, 200)
 
-        self.button = QPushButton("Tıkla")
-        self.line_edit = QLineEdit()
-        self.line_edit.setPlaceholderText("Bir şey yazın...")
+        # Merkezi alan ve Layout
+        self.merkezi_alan = QWidget()
+        self.setCentralWidget(self.merkezi_alan)
+        self.layout = QVBoxLayout(self.merkezi_alan)
 
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.line_edit)
+        self.etiket = QLabel("Kullanıcı Adı:")
+        self.layout.addWidget(self.etiket)
 
-        # Buton için doğrudan stil
-        self.button.setStyleSheet("""
+        self.input_kadi = QLineEdit()
+        self.layout.addWidget(self.input_kadi)
+
+        self.buton_giris = QPushButton("Giriş Yap")
+        self.layout.addWidget(self.buton_giris)
+
+        # --- BURASI QSS KISMI ---
+        # 1. Metin kutusuna doğrudan stil verme
+        self.input_kadi.setStyleSheet("""
+            QLineEdit {
+                border: 2px solid #007BFF;
+                border-radius: 5px;
+                padding: 8px;
+                font-size: 14px;
+            }
+        """)
+
+        # 2. Butonuna doğrudan stil verme
+        self.buton_giris.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50;
+                background-color: #28A745;
                 color: white;
                 border: none;
-                padding: 8px 16px;
+                padding: 10px 20px;
+                border-radius: 5px;
                 font-size: 14px;
-                border-radius: 4px;
+                font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color: #218838;
             }
             QPushButton:pressed {
-                background-color: #3d8b40;
+                background-color: #1E7E34;
             }
         """)
+        # --- BİTİŞ ---
 
-        # Metin kutusu için doğrudan stil
-        self.line_edit.setStyleSheet("""
-            QLineEdit {
-                border: 2px solid #ccc;
-                border-radius: 4px;
-                padding: 6px;
-                font-size: 14px;
-            }
-            QLineEdit:focus {
-                border-color: #4CAF50;
-            }
-        """)
+def main():
+    app = QApplication(sys.argv)
+    pencere = StilUygulamasi()
+    pencere.show()
+    sys.exit(app.exec())
 
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
+if __name__ == "__main__":
+    main()
 ```
 
-#### Kod Analizi / Bu Kod Ne Sağlar?
+**Kodun Açıklaması:**
+- **`setStyleSheet(""" ... """)`**: Bu metot, bir widget'a doğrudan CSS benzeri stil kuralları uygular.
+- **Seçiciler**: `QLineEdit` ve `QPushButton` gibi sınıf isimlerini kullanarak hedeflediğimizi söyleriz.
+- **Durum Sınıfları (Pseudo-classes)**: `:hover` (fare üzerine geldiğinde) ve `:pressed` (basılı olduğunda) gibi durumlar için farklı stiller tanımlayabiliriz.
+- **CSS Özellikleri**: `background-color`, `border`, `border-radius`, `padding`, `font-size` gibi özellikler CSS ile aynı şekilde kullanılır.
 
-- **QPushButton stil Yeşil tonlar:** Arka plan yeşil, yazı beyaz, kenarlık yok, iç boşluk 8x16 piksel, yazı boyutu 14px, köşe yuvarlaklığı 4px.
-- **:hover durumu:** Fare buton üstünde olduğunda arka plan daha koyu yeşile (`#45a049`) değişir.
-- **:pressed durumu:** Buton basılıyken arka plan en koyu yeşile (`#3d8b40`) değişir.
-- **QLineEdit stil:** Gri kenarlık (2px), iç boşluk 6px, yazı boyutu 14px, köşe yuvarlaklığı 4px. Odaklandığında (`:focus`) kenarlık yeşile (`#4CAF50`) değişir.
-- Bu stiller doğrudan Python kodunda tanımlanarak widget'ların görünümü anında etkilenir.
+### Adım 2: Harici QSS Dosyası Kullanımı
 
-#### Görsel / İşlevsel Sonuç
+Stillerimizi kod içinde değil, ayrı bir `.qss` dosyasında tutmak daha düzenlidir. Bu sayede tasarımcı ve geliştirici rollerini ayırabiliriz.
 
-```
-Ekranda "QSS Örneği - Temel Stil" başlıklı bir pencere görünür.
-Üstte yeşil arkaplanlı, beyaz yazılı "Tıkla" butonu bulunur.
-Butonun üzerinde fare beklediğinde arka parlak daha koyu yeşile, basıldığında daha da koyu tonlara geçer.
-Altta bir metin kutusu (QLineEdit) vardır; kutunun kenarığı gri ve yuvarlak köşelidir.
-Kutucuğa tıklandığında odak olur ve kenarlık yeşile değişir.
-Kutucuğa bir metin yazılabilir; buton henüz herhangi bir işlev görmez.
-```
-
----
-
-### Adım 2: Hover (:hover) ve basılma (:pressed) durumları için efektler tanımlama
-
-> **Nedir/Ne işe yarar?** Kullanıcı bir widget'ın üzerine gelindiğinde veya basındığında farklı bir görünüm göstermek, arayüzü daha canlı ve etkileşimli hale getirir. QSS'te bu durumlar `:hover` ve `:pressed` pseudosınıflarıyla tanımlanır.
-
-Bu adımda daha önceki kodda zaten yer alan `:hover` ve `:pressed` stillerini vurgulamak istiyoruz. Stil tanımları içinde bu pseudosınıflar kullanılarak widget'ın etkileşim durumlarına göre farklı arka plan, kenarlık veya yazı rengi verilebilir.
-
-> [!TIP]
-> `:hover` ve `:pressed` dışında `:disabled` (devre dışı) durumu da tanımlanabilir; bu durumda genellikle daha soluk renkler ve diminished etkiler kullanılır.
-
-> [!WARNING]
-> Fazla efekt kullanmak (gölge, animasyon vb.) performansı olumsuz etkileyebilir; basit renk ve kenarlık değişiklikleri genellikle yeterlidir.
-
-#### Ek Açıklama: Daha Fazla Efekt Örneği
-
-İsterseniz stil tanımlarına ek özellikler ekleyebilirsiniz:
-
-```css
-QPushButton {
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    padding: 10px;
-    font-size: 13px;
-}
-QPushButton:hover {
-    background-color: #1976D2;
-}
-QPushButton:pressed {
-    background-color: #0D47A1;
-}
-QPushButton:disabled {
-    background-color: #BDBDBD;
-    color: #757575;
-}
-```
-
-Bu şekilde butonun normal, hover, pressed ve disabled stilleri ayrı ayrı tanımlanabilir.
-
----
-
-### Adım 3: Harici bir style.qss dosyası oluşturup tüm uygulamaya app.setStyleSheet() ile temalandırma uygulama
-
-Stilleri kod içinde değil, harici bir `.qss` dosyasında tutmak daha okunabilir ve yeniden kullanılabilir bir yapı sağlar. Bu dosyayı okuyarak `QApplication` örneğine uygulayarak tüm uygulama üzerindeki stil değişikliğini yapabiliriz.
-
-#### Eklenecek Kod
-
-Önce `style.qss` dosyasını oluşturalım (aynı dizinde):
+1.  Proje klasörünüzde `style.qss` adında bir dosya oluşturun ve içine aşağıdaki stilleri yapıştırın:
 
 ```css
 /* style.qss */
+
+/* Genel widget stilleri */
+QLineEdit {
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+    background-color: #F8F9FA;
+}
+
 QPushButton {
-    background-color: #FF9800;
+    background-color: #28A745;
     color: white;
     border: none;
-    padding: 8px 14px;
+    padding: 10px 20px;
+    border-radius: 5px;
     font-size: 14px;
-    border-radius: 4px;
+    font-weight: bold;
 }
+
+/* Buton durum stilleri */
 QPushButton:hover {
-    background-color: #FB8C00;
+    background-color: #218838;
 }
+
 QPushButton:pressed {
-    background-color: #F57C00;
+    background-color: #1E7E34;
 }
-QLineEdit {
-    border: 2px solid #9E9E9E;
-    border-radius: 4px;
-    padding: 6px;
+
+/* Etiket stili */
+QLabel {
     font-size: 14px;
-}
-QLineEdit:focus {
-    border-color: #FF9800;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 ```
 
-Şimdi bu dosyayı okuyarak uygulamaya uygulayan Python kodu:
+2.  Şimdi bu `.qss` dosyasını uygulama seviyesinde yükleyelim:
 
 ```python
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QVBoxLayout
-from PySide6.QtCore import QFile
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
+                             QVBoxLayout, QLineEdit, QPushButton, QLabel)
 
-class AnaPencere(QWidget):
+class StilUygulamasi(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("QSS Örneği - Harici Dosya")
-        self.resize(300, 150)
+        self.initUI()
 
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+    def initUI(self):
+        self.setWindowTitle("Harici QSS ile Stil Uygulaması")
+        self.resize(300, 200)
 
-        self.button = QPushButton("Tıkla")
-        self.line_edit = QLineEdit()
-        self.line_edit.setPlaceholderText("Bir şey yazın...")
+        # Merkezi alan ve Layout
+        self.merkezi_alan = QWidget()
+        self.setCentralWidget(self.merkezi_alan)
+        self.layout = QVBoxLayout(self.merkezi_alan)
 
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.line_edit)
+        self.etiket = QLabel("Kullanıcı Adı:")
+        self.layout.addWidget(self.etiket)
 
-        # Harici QSS dosyasını yükle ve uygula
-        style_file = QFile("style.qss")
-        if style_file.open(QFile.ReadOnly | QFile.Text):
-            style_stream = style_file.readAll()
-            style_qss = str(style_stream, encoding='utf-8')
-            QApplication.instance().setStyleSheet(style_qss)
-            style_file.close()
+        self.input_kadi = QLineEdit()
+        self.layout.addWidget(self.input_kadi)
 
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
+        self.buton_giris = QPushButton("Giriş Yap")
+        self.layout.addWidget(self.buton_giris)
+
+        # --- HARICI QSS YÜKLEME ---
+        with open("style.qss", "r") as f:
+            qss_stili = f.read()
+        self.setStyleSheet(qss_stili) # Uygulama seviyesinde stil uygula
+        # --- BİTİŞ ---
+
+def main():
+    app = QApplication(sys.argv)
+    pencere = StilUygulamasi()
+    pencere.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
 ```
 
-#### Kod Analizi / Bu Kod Ne Sağlar?
+### Adım 3: Koyu/Açık Tema Geçişi
 
-- **QFile ile dosya okuma:** `QFile("style.qss")` nesnesi oluşturulur, `ReadOnly` ve `Text` modunda açılır; okunan veri `readAll()` ile alınır ve `utf-8` ile decode edilir.
-- **Uygulama seviyesinde stil:** `QApplication.instance().setStyleSheet(style_qss)` çağrısıyla oluşturulan stil string'i tüm uygulamaya uygulanır; bu sayede tüm `QPushButton` ve `QLineEdit` widget'ları aynı stilleri alır.
-- **Dosya yolu:** `style.qss` dosyası Python betiğiyle aynı dizinde bulunmalıdır; aksi takdirde dosya bulunamadı hatası alınır.
-- **instance() kullanımı:** `QApplication.instance()` zaten oluşturulmuş uygulama örneğini alır; bu sayede `setStyleSheet()` uygulama genelinde etkili olur.
+Şimdi de bir buton ile temayı dinamik olarak değiştirelim.
 
-#### Görsel / İşlevsel Sonuç
+```python
+import sys
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
+                             QVBoxLayout, QLineEdit, QPushButton, QLabel)
 
+class TemaDegistirici(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.acik_tema = True # Başlangıçta açık tema
+        self.initUI()
+        self.tema_yukle() # Başlangıç temayı uygula
+
+    def initUI(self):
+        self.setWindowTitle("Tema Değiştirici Uygulaması")
+        self.resize(300, 250)
+
+        # Merkezi alan ve Layout
+        self.merkezi_alan = QWidget()
+        self.setCentralWidget(self.merkezi_alan)
+        self.layout = QVBoxLayout(self.merkezi_alan)
+
+        self.etiket = QLabel("Kullanıcı Adı:")
+        self.layout.addWidget(self.etiket)
+
+        self.input_kadi = QLineEdit()
+        self.layout.addWidget(self.input_kadi)
+
+        self.buton_giris = QPushButton("Giriş Yap")
+        self.layout.addWidget(self.buton_giris)
+
+        # Tema değiştirme butonu
+        self.buton_tema = QPushButton("Tema Değiştir (Açık → Koyu)")
+        self.buton_tema.clicked.connect(self.tema_degistir)
+        self.layout.addWidget(self.buton_tema)
+
+    def tema_yukle(self):
+        """Mevcut tema durumuna göre QSS stilini yükler."""
+        if self.acik_tema:
+            # Açık tema stilleri
+            qss = """
+                QLineEdit {
+                    border: 2px solid #007BFF;
+                    border-radius: 5px;
+                    padding: 8px;
+                    font-size: 14px;
+                    background-color: #FFFFFF;
+                    color: #212529;
+                }
+                QPushButton {
+                    background-color: #28A745;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #218838;
+                }
+                QPushButton:pressed {
+                    background-color: #1E7E34;
+                }
+                QLabel {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #212529;
+                    margin-bottom: 5px;
+                }
+                QMainWindow {
+                    background-color: #F8F9FA;
+                }
+            """
+        else:
+            # Koyu tema stilleri
+            qss = """
+                QLineEdit {
+                    border: 2px solid #007BFF;
+                    border-radius: 5px;
+                    padding: 8px;
+                    font-size: 14px;
+                    background-color: #343A40;
+                    color: #FFFFFF;
+                }
+                QPushButton {
+                    background-color: #28A745;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #218838;
+                }
+                QPushButton:pressed {
+                    background-color: #1E7E34;
+                }
+                QLabel {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #FFFFFF;
+                    margin-bottom: 5px;
+                }
+                QMainWindow {
+                    background-color: #212529;
+                }
+            """
+        self.setStyleSheet(qss)
+
+    def tema_degistir(self):
+        """Tema durumunu toggler ve stilini yeniden yükler."""
+        self.acik_tema = not self.acik_tema
+        self.tema_yukle()
+        # Buton metnini güncelle
+        self.buton_tema.setText(
+            f"Tema Değiştir ({'Koyu → Açık' if self.acik_tema else 'Açık → Koyu'})"
+        )
+
+def main():
+    app = QApplication(sys.argv)
+    pencere = TemaDegistirici()
+    pencere.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
 ```
-Ekranda "QSS Örneği - Harici Dosya" başlıklı bir pencere görünür.
-Buton turuncu arkaplanlı, beyaz yazılı; fare üstünde daha açık turuncu, basıldığında daha koyu tonlar görünür.
-Metin kutusunun kenarığı gri ve yuvarlak köşeli; odaklandığında kenarlık turuncu olur.
-Kullanıcı metin kutusuna yazabilir, buton etkileşimde hâlâ bir işlev görmez.
-```
+
+## 🧪 Deneyelim ve Gözlemleyelim
+
+1.  **Inline QSS:** İlk örneği çalıştırın. Metin kutusu ve butonun görünümünün değiştiğini gözlemleyin. Fareyi butonun üzerine getirdiğinizde rengin değişip değişmediğini kontrol edin.
+2.  **Harici QSS:** `style.qss` dosyasını oluşturun ve ikinci örneği çalıştırın. Şimdi stil değiştirmek için sadece `style.qss` dosyasını düzenlemeniz yeterli olacak.
+3.  **Tema Değişikliği:** Üçüncü örneği çalıştırın ve "Tema Değiştir" butonuna basın. Uygulamanın arka plan rengi ve metin renklerinin değiştiğini gözlemleyin.
+
+## 🧠 Kendini Test Et
+
+1. **Soru:** QSS'te bir widget'ın sadece belirli bir durumunda (örneğin devre dışı bırakılmış) stilini nasıl değiştiririz?
+2. **Soru:** `setStyleSheet()` metodu ile uygulama seviyesinde stil verdiğimizde, bu stil hangi bileşenler üzerinde etkili olur?
+
+<details>
+<summary>Cevapları göster</summary>
+
+1. **Cevap:** Durum sınıfı (pseudo-class) kullanırız: `QPushButton:disabled { background-color: #CCCCCC; }`
+2. **Cevap:** Uygulama içindeki **tüm** bileşenler üzerinde etkili olur. Daha spesifik bir stil (örneğin sadece bir buton için) istenirse, o bileşene doğrudan `setStyleSheet()` uygulanmalı veya seçici daha spesifik hale getirilmeli (örneğin `QPushButton#ozelButon`).
+
+</details>
+
+## 🚀 Kendin Dene
+
+**Görev:**
+1.  Bir `QTextEdit` ve iki `QPushButton` ("Temizle" ve "Gönder") içeren basit bir mesaj kutusu uygulamasını oluşturun.
+2.  Harici bir `style.qss` dosyası kullanarak:
+    - Metin kutusunu yuvarlak köşeli ve hafif gri arka planlı yapın.
+    - Butonları yuvarlak köşeli, farklı renklerde ve hover эффекти yapın.
+3.  "Tema Değiştir" butonu ekleyerek kullanıcıya koyu ve açık tema arasında geçiş yapma imkanı verin.
+
+## 📚 Daha Fazlasını Öğrenmek
+
+- [Qt Style Sheets Official Documentation](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QWidget.html#PySide6.QtWidgets.QWidget.setStyleSheet)
+- [Qt Style Sheets Syntax Reference](https://doc.qt.io/qt-6/stylesheet-syntax.html)
+
+## 📝 Kısa Özet
+
+- **QSS**, Qt bileşenlerini stilize etmek için CSS benzeri bir dildir.
+- **`setStyleSheet()`**, tek bir bileşene veya整个应用에スタイルを適用するために使用されます。
+- **Durum sınıfları** (`:hover`, `:pressed`, `:disabled`) etkileşimli stiller için kullanılır.
+- **Harici `.qss` dosyaları**, stil ve mantığı ayrı tutmak için önerilen yaklaşımdır.
+- **Tema geçişi**, farklı QSS string'lerini çalışma zamanında yükleyerek elde edilir.
 
 ---
-
-### Adım 4: Uygulamada koyu ve açık tema geçişi (toggle butonu) - Sıra Sende Görevi
-
-> **Sıra Sende Görevi:** Bir geçiş butonu (Toggle) koyarak uygulamanın temasını Koyu ve Açık arasında dinamik değiştiren slot yazma.
-
-Bu görevi tamamlamak için iki ayrı `.qss` dosyası hazırlayacağız: birisi `dark.qss` (koyu tema), diğeri `light.qss` (açık tema). Kullanıcı bir buton ile temayı değiştirdiğinde, ilgili dosya okunup `setStyleSheet()` ile uygulanır.
-
-#### İlk Adım: Tema Dosyalarını Oluşturma
-
-**dark.qss** (koyu tema):
-```css
-/* dark.qss */
-QWidget {
-    background-color: #2E2E2E;
-    color: #FFFFFF;
-}
-QPushButton {
-    background-color: #0D47A1;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    font-size: 14px;
-    border-radius: 4px;
-}
-QPushButton:hover {
-    background-color: #1565C0;
-}
-QPushButton:pressed {
-    background-color: #0A3D91;
-}
-QLineEdit {
-    background-color: #424242;
-    border: 2px solid #9E9E9E;
-    border-radius: 4px;
-    padding: 6px;
-    font-size: 14px;
-    color: #FFFFFF;
-}
-QLineEdit:focus {
-    border-color: #0D47A1;
-}
-```
-
-**light.qss** (açık tema):
-```css
-/* light.qss */
-QWidget {
-    background-color: #FFFFFF;
-    color: #212121;
-}
-QPushButton {
-    background-color: #1976D2;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    font-size: 14px;
-    border-radius: 4px;
-}
-QPushButton:hover {
-    background-color: #1565C0;
-}
-QPushButton:pressed {
-    background-color: #0D47A1;
-}
-QLineEdit {
-    background-color: #FFFFFF;
-    border: 2px solid #9E9E9E;
-    border-radius: 4px;
-    padding: 6px;
-    font-size: 14px;
-    color: #212121;
-}
-QLineEdit:focus {
-    border-color: #1976D2;
-}
-```
-
-#### İkinci Adım: Temayı Değiştiren Slot Fonksiyonu
-
-```python
-import sys
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QVBoxLayout, QCheckBox
-from PySide6.QtCore import QFile
-
-class AnaPencere(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("QSS Tema Geçişi")
-        self.resize(350, 150)
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self.button = QPushButton("Tıkla")
-        self.line_edit = QLineEdit()
-        self.line_edit.setPlaceholderText("Bir şey yazın...")
-        self.toggle_theme = QCheckBox("Koyu Tema")
-        self.toggle_theme.setChecked(False)  # Başlangıçta açık tema
-        self.toggle_theme.stateChanged.connect(self.tema_degistir)
-
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.line_edit)
-        self.layout.addWidget(self.toggle_theme)
-
-        # Başlangıçta açık temayı uygula
-        self.tema_yukle("light.qss")
-
-    def tema_yukle(self, qss_dosyasi):
-        style_file = QFile(qss_dosyasi)
-        if style_file.open(QFile.ReadOnly | QFile.Text):
-            style_stream = style_file.readAll()
-            style_qss = str(style_stream, encoding='utf-8')
-            QApplication.instance().setStyleSheet(style_qss)
-            style_file.close()
-        else:
-            print(f"Stil dosyası bulunamadı: {qss_dosyasi}")
-
-    def tema_degistir(self, state):
-        if state == 2:  # Checked
-            self.tema_yukle("dark.qss")
-        else:  # Unchecked
-            self.tema_yukle("light.qss")
-
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
-```
-
-#### Kod Analizi / Bu Kod Ne Sağlar?
-
-- **QCheckBox:** Kullanıcı temayı değiştirmek için bir onay kutusu (toggle) kullanılır; durum değişikliği `stateChanged` sinyaliyle `tema_degistir` slotuna bağlanır.
-- **`tema_yukle()` metodu:** Belirtilen `.qss` dosyasını okuyarak uygulama seviyesinde stil uygular; dosya yoksa hata mesajı yazdırılır.
-- **`tema_degistir()` metodu:** Onay kutusu işaretliyse (`state == 2`) `dark.qss`, işaretli değilse `light.qss` dosyası yüklenir.
-- **Başlangıç teması:** Nesne oluşturulurken `light.qss` yüklenerek açık tema ile başlatılır.
-- **Uygulama seviyesi stil değişikliği:** `QApplication.instance().setStyleSheet()` ile tüm widget'lar anında yeni stilleri alır.
-
-#### Görsel / İşlevsel Sonuç
-
-```
-Ekranda "QSS Tema Geçişi" başlıklı bir pencere görünür.
-Üstte bir buton, altında bir metin kutusu ve onay kutusu "Koyu Tema" bulunur.
-Başlangıçta onay kutusu işaretli değil, açık tema aktif: arka plan beyaz, yazı koyu gri, buton mavi, metin kutusu beyaz arkaplan gri kenarlık.
-Kullanıcı onay kutusunu işaretlerse (Koyu Tema):
-    - Pencere arka planı koyu gri (#2E2E2E) olur.
-    - Yazı beyaz olur.
-    - Buton koyu mavi (#0D47A1), hoverda daha açık mavi, basılıyken daha koyu mavi.
-    - Metin kutusu arka planı daha koyu gri (#424242), yazı beyaz, kenarlık gri, odaklandığında mavi kenarlık.
-Kullanıcı onay kutusunu işaretini kaldırırsa yeniden açık temaya döner.
-```
-
-## 3. Sıra Sende (Pekiştirme Görevi)
-
-- **Görev:** Bir geçiş butonu (Toggle) koyarak uygulamanın temasını Koyu ve Açık arasında dinamik değiştiren slot yazma.
-- **İpucu:** `> [!TIP]` İki ayrı `.qss` dosyası (`dark.qss` ve `light.qss`) oluşturun; bunları okuyarak `QApplication.instance().setStyleSheet()` ile uygulamaya uygulayın. Temayı değiştiren bir `QCheckBox` veya `QToggleButton` kullanarak `stateChanged` sinyalini bir slot fonksiyonuna bağlayın; slot içinde ilgili dosyayı seçip stil yapın.
-- **Beklenen Çıktı:** Kodu çalıştırdığınızda, bir buton, bir metin kutusu ve bir "Koyu Tema" onay kutusu görürünüz. Onay kutusu işaretli olduğunda uygulama koyu temaya, işaretli değilse açık temaya geçer; geçiş anında ve sorunsuz olur.
-
-> [!TIP]
-> Temada kullanmak istediğiniz widget'ları seçmek için nesne adı (`objectName`) veya özelliği bazlı seçiciler de kullanabilirsiniz; örneğin `QPushButton#toggleButton { ... }` sadece belirli bir butonu hedef alır.
+[⬅️ Önceki Ders](Topics/07-Windows-And-Dialogs.md) | [Sonraki Ders ➡️](Topics/09-Data-Listing-Widgets.md)

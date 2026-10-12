@@ -1,289 +1,136 @@
-# 02 - OOP ve Yapı
+# OOP ve Temel Yapı
 
-## 1. Nesne Yönelimli Programlama ile Profesyonel Arayüzler
+## 🎯 Bu Derste Ne Öğreneceğiz?
 
-PySide6 ile basit bir `QWidget` penceresi oluşturmak işe yarar, ancak gerçek dünya uygulamaları için daha düzenli ve ölçeklenebilir bir yapıya ihtiyaç duyarız. İşte bu noktada **Nesne Yönelimli Programlama (OOP)** devreye giriyor.
+Bu dersin sonunda aşağıdaki yetkinliklere sahip olacaksınız:
 
-### Neden Arayüz Kodlarında OOP Kullanılır?
+- Grafiksel arayüz geliştirmede Nesne Yönelimli Programlama (OOP) mantığının neden kritik olduğunu açıklayabilmek.
+- `QWidget` ve `QMainWindow` sınıfları arasındaki yapısal farkları ayırt edebilmek.
+- Python'da sınıf (class) yapısı kullanarak arayüz bileşenlerini bir bütün halinde organize edebilmek.
+- Kalıtım (Inheritance) ve `super().__init__()` kavramlarını bir arayüz projesinde uygulayabilmek.
+- Sınıf içi değişkenleri (`self.`) kullanarak widget'lara farklı metotlardan erişebilmek.
 
-Bir pencereyi sadece işlevsel fonksiyonlarla yönetmek, uygulama büyüdükça kodun karışık ve sürdürülemez olmasına yol açar. OOP sayesinde:
+## 💡 Neden Bu Konuyu Öğreniyoruz?
 
-- **Encapsulation (Kapsülleme):** Pencereye ait tüm özellikler (başlık, boyut, bileşenler) ve davranışları (buton tıklama, veri güncelleme) tek bir sınıf içinde gruplanır.
-- **Inheritance (Miras Alma):** `QMainWindow` gibi güçlü Qt sınıflarından özellikleri miras alarak sıfırdan her şeyi yapıyoruz yerine, hazır altyapıyı genişletiyoruz.
-- **Modülerlik:** Uygulamanın farklı parçalarını (menü çubuğu, durum çubuğu, ana içerik) ayrı metodlarda yöneterek kodun okunabilirliğini artırıyoruz.
+Geçen hafta yazdığımız kod, basit bir pencere açmak için yeterliydi. Ancak gerçek bir uygulama; onlarca buton, yüzlerce metin kutusu, veritabanı bağlantıları ve karmaşık iş mantığı içerir. 
 
-> [!TIP]
-> Bir sınıfı düşünün; kendi içinde hem veri (pencere boyutu, başlık) hem de işlev (başlangıç ayarları, etiket oluşturma) bulunduran bir şablon olarak. Bu şablondan istediğimiz kadar örnek (instance) oluşturabiliriz.
+Eğer her şeyi tek bir dosya içinde, değişkenleri tek tek tanımlayarak yazmaya kalkarsanız, kodunuz bir süre sonra yönetilemez bir "spagetti koda" dönüşür. **Nesne Yönelimli Programlama (OOP)**, arayüzünüzü ve uygulamanızın özelliklerini mantıklı "nesneler" (sınıflar) altında toplamanıza olanak tanır. Bu sayede kodunuz düzenli, tekrar kullanılabilir ve geliştirilebilir olur.
 
-### QMainWindow vs QWidget: Ne Zaman Hangisini Kullanmalıyız?
+## 🔍 Birlikte Keşfedelim
 
-`QWidget` en temel görsel pencere türüdür; `QMainWindow` ise daha fazla yapıya sahip bir penceredir — menü çubuğu, araç çubuğu, durum çubuğu ve merkez widget alanı gibi yerleşik bölümleri bulunur.
+Bir mimar olduğunuzu hayal edin. Bir ev inşa ederken sadece tuğlaları üst üste dizmezsiniz; önce bir **plan (blueprint)** hazırlarsınız. Bu plan; odaların nerede olacağını, kapıların nereye açılacağını ve evin genel yapısını belirler.
 
-| Özellik | `QWidget` | `QMainWindow` |
-|---------|-----------|---------------|
-| Menü çubuğu (`QMenuBar`) | Yok (manuel ekleme gerekir) | Yerleşik |
-| Araç çubuğu (`QToolBar`) | Yok | Yerleşik |
-| Durum çubuğu (`QStatusBar`) | Yok | Yerleşik |
-| Merkez widget alanı | Yok (tüm pencereyi yönetir) | `setCentralWidget()` ile özel widget yerleştirilebilir |
-| Kullanım Senaryosu | Basit diyaloglar, araçlar | Ana uygulama pencereleri |
+- **Plan (Class/Sınıf):** Evin nasıl olacağını tarif eden çizimdir. Henüz bir ev değildir, sadece bir tariftir.
+- **Ev (Instance/Nesne):** Bu plana bakılarak inşa edilmiş, içinde yaşayabileceğiniz gerçek yapıdır.
 
-> [!NOTE]
-> Eğer uygulamanız sadece bir buton ve bir etiketten oluşuyorsa `QWidget` yeterli olabilir; ancak menü, araç çubuğu veya durum çubuğu gibi standart bileşenler planlıyorsanız `QMainWindow` doğru seçimdir.
-
-### Miras Alma ve `super().__init__()`
-
-PySide6'de bir pencere sınıfı oluştururken genellikle mevcut Qt sınıflarından **miras** alırız. Bu sayede tüm hazır işlevleri (olay yönetimi, çizim motoru, pencereler arası iletişim) kazanırız ve sadece ihtiyacımız olan ekstra özellikleri ekleriz.
-
-```python
-class AnaPencere(QMainWindow):
-    def __init__(self):
-        super().__init__()  # QMainWindow'ın kurucusunu çalıştırır
-        # Şimdi kendi ekstra ayarlarımızı yapabiliriz
-```
-
-`super().__init__()` ifadesi, miras alınan sınıfın (`QMainWindow`) `__init__` metodunu çağırır; böylece pencere sisteminin iç yapısı doğru şekilde kurulur. Bu çağrıyı yapmazsak, `QMainWindow`'ın temel özellikleri (menü çubuğu gibi) eksik kalır ve pencere beklendiği gibi çalışmayabilir.
-
-### Sınıf İçi Değişkenler ve Metot Düzeni
-
-Bir pencere sınıfı içinde iki tür öğe tutarız:
-
-1. **Özellikler (Attributes):** `self.label`, `self.button` gibi, sınıfın yaşamı boyunca değişebilen değerler.
-2. **Metotlar (Methods):** `self.initUI()`, `self.buton_tiklandi()` gibi, belirli görevleri yapan işlevler.
-
-Bu düzenlemeyi şu şekilde yaparız:
-
-```python
-class AnaPencere(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.pencere_basligi = "OOP ile PySide6"  # Özellik örneği
-        self.initUI()  # Metod çağrısı
-
-    def initUI(self):
-        # Arayüzü kurmak için ayrı bir metod
-        self.setWindowTitle(self.pencere_basligi)
-        self.resize(400, 300)
-```
+GUI dünyasında da durum aynıdır. `AnaPencere` adında bir plan (sınıf) hazırlarız, sonra bu plandan gerçek bir pencere (nesne) üretiriz.
 
 > [!IMPORTANT]
-> `self.` ön eki, sınıfın bir özelliğini veya metotunu gösterir; bu sayede `__init__` içinde tanımlanan bir değişkene `initUI` gibi başka bir metottan da erişebiliriz.
+> Eğer bir arayüzü sınıf yapısı kullanmadan yazarsanız, bir butona basıldığında o butonun içindeki veriye başka bir fonksiyonun ulaşması çok zorlaşır. Sınıf yapısı, tüm bu bileşenleri tek bir "çatı" altında toplar.
 
----
+## 🛠️ Uygulama
 
-## 2. Adım Adım Kod Uygulaması
+Bu derste, bir önceki haftaki kodumuzu daha profesyonel bir yapıya, yani bir sınıf yapısına dönüştüreceğiz.
 
-> **Senaryo:** Bir önceki konuda oluşturduğumuz boş pencereyi OOP yapısıyla yeniden yapılandıracağız. Şimdi `QMainWindow` dan miras alacak bir `AnaPencere` sınıfı tanımlayıp, içinde bir `QLabel` göstereceğiz. Ayrıca pencereyi başlatan ve gösteren `main.py` dosyasını VS Code içinde düzenleyeceğiz.
+### Adım 1: Sınıf Yapısını Kurma ve Kalıtım
 
-> [!TIP]
-> Bu adımları VS Code'daki `main.py` dosyasında uygulayarak, her adımda dosyayı kaydedip `python main.py` komutuyla terminalde anlık sonuçları görebilirsiniz.
+Öncelikle `QMainWindow` sınıfından miras alan bir `AnaPencere` sınıfı tanımlayacağız. `super().__init__()` komutu, miras aldığımız `QMainWindow` sınıfının tüm özelliklerini bizim sınıfımıza aktarır.
 
----
+### Adım 2: Yardımcı Metot (`initUI`) Kullanımı
 
-### Adım 1: QMainWindow'tan Miras Alan Sınıfı ve `__init__` Metodu
+Tüm arayüz kodlarını doğrudan `__init__` içine yazmak yerine, düzenli olması için `initUI` adında bir yardımcı metot oluşturacağız.
 
-#### Eklenecek Kod
+### Adım 3: Widget'ları Sınıf İçinde Tanımlama
 
-```python
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
-
-class AnaPencere(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Ana Pencere")
-        self.resize(400, 300)
-
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
-```
-
-#### Kod Analizi / Bu Kod Ne Sağlar?
-
-- `import sys` → Komut satırı argümanlarını ve çıkış kodunu yönetmek için gerekli.
-- `from PySide6.QtWidgets import QApplication, QMainWindow` → Uygulama döngüsü için `QApplication`, ana pencere sınıfı için `QMainWindow` alır.
-- `class AnaPencere(QMainWindow):` → `QMainWindow`'dan miras alır; bu sayede menü çubuğu, araç çubuğu gibi yapıları otomatik olarak kullanır.
-- `def __init__(self):` → Sınıfın yapıcı (constructor) metodu; nesne oluşturulduğunda ilk çalıştırılan bloktur.
-- `super().__init__()` → `QMainWindow`'ın kendi yapıcısını çalıştırır; pencerenin temel altyapısı kurulur.
-- `self.setWindowTitle("Ana Pencere")` → Pencerenin başlığını ayarlar; `self.` ile sınıf özelliği gibi kullanılır (aslında doğrudan `QMainWindow` metodu).
-- `self.resize(400, 300)` → Pencere boyutunu 400×300 piksel olarak belirler.
-- `app = QApplication(sys.argv)` → Qt olay döngüsünü yöneten uygulama nesnesi oluşturur.
-- `pencere = AnaPencere()` → `AnaPencere` sınıfından bir örnek (instance) oluşturur; bu aşamada `__init__` çalışır ve pencere yapılandırılır.
-- `pencere.show()` → Pencereyi ekranda görünür kılar.
-- `sys.exit(app.exec())` → Olay döngüsünü başlatır ve pencere kapatıldığında güvenli çıkış sağlar.
-
-#### Görsel / İşlevsel Sonuç
-
-```
-Ekranda "Ana Pencere" başlıklı, 400 × 300 piksellik boş bir pencere belirir.
-Henüz hiçbir etiket, buton veya diğer bileşen eklemediğimiz için pencerenin içi tamamen boştur.
-```
-
-> [!WARNING]
-> `super().__init__()` çağrısını unutursanız, `QMainWindow`'ın menü çubuğu gibi temel özellikleri eksik olur ve pencere beklendiği gibi görüntülenmeyebilir.
-
----
-
-### Adım 2: Arayüzü Ayıran `initUI()` Metodu ve Pencere Özellikleri
-
-#### Eklenecek Kod
+Widget'larımızı (etiketler, butonlar vb.) `self.etiket` şeklinde tanımlayacağız. Buradaki `self`, bu nesnenin "kendisine" ait olduğunu ve sınıfın her yerinden erişilebileceğini belirtir.
 
 ```python
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QLabel, QWidget
 
 class AnaPencere(QMainWindow):
     def __init__(self):
+        # 1. Miras alınan sınıfın (QMainWindow) başlatılması
         super().__init__()
-        self.initUI()  # Arayüzü ayrı bir metotta topluyoruz
-
-    def initUI(self):
-        self.setWindowTitle("OOP ile PySide6")
-        self.resize(400, 300)
-
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
-```
-
-#### Kod Analizi
-
-- `__init__` içinde doğrudan pencere ayarlarını yazmak yerine, `self.initUI()` çağrısıyla bu işi ayrı bir metota devrettik.
-- Bu sayede `__init__` daha temiz ve okunabilir olur; özellikle arayüz kompleksleştiğinde (menüler, araç çubuğu, çok sayıda widget) `initUI` metoduだけで tüm arayüz kurulumunu yönetebiliriz.
-- `initUI` metodu içinde yine `self.setWindowTitle` ve `self.resize` kullanıyoruz; bu metotlar `QMainWindow`'dan miras alınmıştır ve `self.` ile sınıf içinde erişilebilir.
-
-#### Görsel / İşlevsel Sonuç
-
-```
-Önceki adımla aynı: "OOP ile PySide6" başlıklı 400 × 300 piksellik boş bir pencere.
-Fark, kod yapısında: pencere ayarları artık `initUI` metodu içinde toplu olarak yönetiliyor.
-```
-
-> [!TIP]
-> `initUI` gibi ayrı bir metod kullanmak, özellikle aynı pencereyi farklı yapılandırmalarla (örneğin test modu ve üretim modu) tekrar tekrar oluşturmanız gerektiğinde kod tekrarını önler.
-
----
-
-### Adım 3: QLabel Bileşeni Oluşturup Pencereye Ekleme
-
-#### Eklenecek Kod
-
-```python
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QLabel
-
-class AnaPencere(QMainWindow):
-    def __init__(self):
-        super().__init__()
+        
+        # 2. Arayüz kurulum metodu çağrılıyor
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("OOP ile PySide6")
+        # Pencere ayarları
+        self.setWindowTitle("OOP ile İlk Pencere")
         self.resize(400, 300)
 
-        # QLabel oluşturup metin atıyoruz
-        self.etiket = QLabel("Merhaba, PySide6!", self)
-        self.etiket.move(150, 130)  # Pencere içinde konumlandırma (x=150, y=130)
+        # QMainWindow için merkezi bir widget (merkezi alan) gereklidir.
+        # Tüm bileşenler bu merkezi widget üzerine yerleştirilir.
+        self.merkezi_alan = QWidget()
+        self.setCentralWidget(self.merkezi_alan)
 
-        # Pencereyi göster
-        self.show()
+        # 3. Bir etiket (QLabel) oluşturma ve sınıf değişkeni olarak tanımlama
+        # self.etiket sayesinde bu değişkene sınıfın her yerinden ulaşabiliriz.
+        self.etiket = QLabel("OOP Dünyasına Hoş Geldiniz!", self.merkezi_alan)
+        
+        # Etiketi pencerenin ortasına yakın bir yere konumlandıralım
+        self.etiket.move(100, 130)
 
-        # Ekran ortalaması:
-        # QScreen() doğrudan örneklenemez; pencere.screen() ile ekran alınır
-        ekran = self.screen()
-        ekran_geometrisi = ekran.availableGeometry()
-        self.move(
-            ekran_geometrisi.center().x() - self.width() // 2,
-            ekran_geometrisi.center().y() - self.height() // 2
-        )
+def main():
+    app = QApplication(sys.argv)
+    
+    # Sınıftan bir nesne (instance) oluşturuyoruz
+    pencere = AnaPencere()
+    pencere.show()
+    
+    sys.exit(app.exec())
 
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
+if __name__ == "__main__":
+    main()
 ```
 
-#### Kod Analizi
+**Kodun Kritik Noktaları:**
+- **`super().__init__()`**: "Ben bir `QMainWindow`'ım ama kendime has özelliklerim de olacak, önce temel özelliklerimi yükle" demektir.
+- **`self.merkezi_alan`**: `QMainWindow` yapısında, butonların ve etiketlerin duracağı bir "ana platform" (central widget) belirlemek zorunludur.
+- **`self.etiket`**: Eğer sadece `etiket = QLabel(...)` yazsaydık, bu değişken sadece `initUI` metodu içinde yaşardı. `self.` kullanarak onu tüm sınıfın bir parçası yaptık.
 
-- `from PySide6.QtWidgets import QApplication, QMainWindow, QLabel` → Etiket göstermek için `QLabel` sınıfını da içeri aktarıyoruz.
-- `etiket = QLabel("Merhaba, PySide6!", self)` → 
-  - İlk argüman: Etiketin göstereceği metin.
-  - İkinci argüman (`self`): Etiketin **ana pencereye** bağlı olmasını sağlar; bu sayede etiket pencereyle birlikte gösterilir ve gizlenir.
-- `etiket.move(150, 130)` → Etiketin pencere'nin sol üst köşesinden (0,0) koordinat bazında 150 piksel sağa, 130 piksel aşağı konumlandırır.
-  > [!NOTE]
-  > `move()` metodu mutlak konumlandırma yapar; bu yüzden pencere boyutu değiştiğinde etiketin konumu elle ayarlanması gerekebilir. Daha esnek bir yerleşim için layout yöneticileri (Bölüm 4) kullanacağız.
+## 🧪 Deneyelim ve Gözlemleyelim
 
-#### Görsel / İşlevsel Sonuç
+Kodunuz çalıştıktan sonra şu değişiklikleri yapın:
 
-```
-Ekranda "OOP ile PySide6" başlıklı 400 × 300 piksellik bir pencere görürüz.
-Pencerenin içinde, sol üst köşesinden 150 piksel sağ ve 130 piksel aşağıda,
-"Merhaba, PySide6!" yazısı siyah renkte bir etiket olarak görünür.
-```
+1.  `self.etiket.move(100, 130)` satırındaki koordinatları değiştirin (örneğin `50, 50`). Etiket nasıl hareket ediyor?
+2.  `self.setWindowTitle(...)` kısmını değiştirin.
+3.  `initUI` metodu içine `print("Arayüz hazırlandı!")` satırını ekleyin. Programı çalıştırdığınızda terminalde ne görüyorsunuz?
 
-> [!IMPORTANT]
-> `QLabel` oluştururken ikinci argüman olarak `self` (ana pencere) vermek zorunludur; aksi takdirde etiket bir **bağımsız pencere** olarak açılır ve ana pencerenin bir parçası olmaz.
+## 🧠 Kendini Test Et
+
+1. **Soru:** `QMainWindow` kullanırken neden `setCentralWidget` metodunu çağırmalıyız?
+2. **Soru:** `self` anahtar kelimesi ne işe yarar?
+
+<details>
+<summary>Cevapları göster</summary>
+
+1. **Cevap:** `QMainWindow` karmaşık bir yapıya sahiptir (menüler, araç çubukları vb.). Uygulamanın ana içeriğinin nerede duracağını belirtmek için merkezi bir bileşen (widget) tanımlamak zorunludur.
+2. **Cevap:** `self`, oluşturulan nesnenin kendisine referans verir. Sınıf içindeki değişkenlerin ve metotların nesneye özel olarak saklanmasını ve sınıfın her yerinden erişilmesini sağlar.
+
+</details>
+
+## 🚀 Kendin Dene
+
+**Görev:**
+`AnaPencere` sınıfı içinde, `initUI` metoduna ikinci bir `QLabel` daha ekleyin. 
+- Bu yeni etiketin metni **"Bu ikinci etikettir."** olsun.
+- Bu etiketi, ilk etiketin hemen altına (örneğin `100, 170` koordinatlarına) yerleştirin.
+- Programı çalıştırdığınızda iki etiketin de pencerede göründüğünden emin olun.
+
+## 📚 Daha Fazlasını Öğrenmek
+
+- [Python Docs: Classes](https://docs.python.org/3/tutorial/classes.html)
+- [PySide6 Documentation: QMainWindow](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QMainWindow.html)
+
+## 📝 Kısa Özet
+
+- **OOP**, karmaşık arayüzleri yönetilebilir parçalara böler.
+- **Kalıtım (Inheritance)**, mevcut sınıfların (örneğin `QMainWindow`) yeteneklerini kullanarak yeni sınıflar türetmemizi sağlar.
+- **`self`**, sınıf içindeki verilerin (widget'lar gibi) kalıcı olmasını ve her yerden erişilmesini sağlar.
+- **`QMainWindow`**, menüler ve araç çubukları gibi özellikler sunan hazır bir pencere yapısıdır.
 
 ---
-
-### Nihai Tam Kod Bloğu
-
-Öğrencinin kopyalayıp doğrudan çalıştırabilecek, tüm adımların birleştiği hali:
-
-```python
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QLabel
-
-class AnaPencere(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle("OOP ile PySide6")
-        self.resize(400, 300)
-
-        # QLabel oluşturup metin atıyoruz
-        self.etiket = QLabel("Merhaba, PySide6!", self)
-        self.etiket.move(150, 130)  # Pencere içinde konumlandırma (x=150, y=130)
-
-        # Pencereyi göster
-        self.show()
-
-        # Ekran ortalaması:
-        # QScreen() doğrudan örneklenemez; pencere.screen() ile ekran alınır
-        ekran = self.screen()
-        ekran_geometrisi = ekran.availableGeometry()
-        self.move(
-            ekran_geometrisi.center().x() - self.width() // 2,
-            ekran_geometrisi.center().y() - self.height() // 2
-        )
-
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.show()
-sys.exit(app.exec())
-```
-
-> [!TIP]
-> Etiketin konumunu denemek istiyorsanız, `etiket.move(x, y)` içindeki `x` ve `y` değerlerini değiştirip kaydedip `python main.py` ile yeniden çalıştırarak anlık güncellemi görüntüleyebilirsiniz.
-
----
-
-## 3. Bireysel Öğrenme Görevi (Sıra Sende)
-
-> **Görev:** `AnaPencere` sınıfının içine ikinci bir `QLabel` ekleyip konumunu ayarlayın. Yeni etiketin metni `"İkinci Etiket"` olsun ve pencerenin sol alt kısmında görünsüz (örneğin `x=50`, `y=250`) konumlandırın.
-
-- **Ipucu:** `QLabel` sınıfını yeniden içeri aktarmanıza gerek yok; zaten üstte import edilmiştir. Yeni bir değişken (örneğin `etiket2`) oluşturup yine `QLabel(..., self)` şeklinde oluşturun ve `move()` metodu ile konum ayarlayın.
-- **Beklenen çıktı:** 
-  - İlk etiket: `"Merhaba, PySide6!"` konum (150, 130)
-  - İkinci etiket: `"İkinci Etiket"` konum (50, 250)
-  - İki etiket de aynı pencere içinde, belirtilen koordinatlarda görünür.
-
-Başarıyla tamamladığınızda, OOP yapısıyla sınıf içinde birçok GUI bileşenini yönetebileceğinizi ve her birini `self.` ile sınıf içinde tutarak gerekirse başka metotlardan da erişebileceğinizi görmüş olursunuz. Bir sonraki konuda **temel widgetların** (QLabel, QPushButton, QLineEdit) nasıl oluşturulduğunu öğreneceğiz.
+[⬅️ Önceki Ders](Topics/01-Introduction-And-Setup.md) | [Sonraki Ders ➡️](Topics/03-Signals-And-Slots.md)

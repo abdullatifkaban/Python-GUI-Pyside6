@@ -1,189 +1,134 @@
-# 05 - Görsel Tasarım Aracı - Qt Designer
+# Qt Designer ile Tasarım
 
-## 1. Görsel Tasarım Aracı - Qt Designer — Kavramsal Temeller
+## 🎯 Bu Derste Ne Öğreneceğiz?
 
-Gelişmiş arayüzler oluştururken widget'ları tek tek kod ile eklemek ve düzenlemek zaman alıcı ve hata açıktır. İşte bu noktada **Qt Designer** devreye girer; sürükle-bırak ile arayüz tasarlayarak .ui dosyası oluştururuz ve bu dosyayı PySide6 ile çalışma zamanında yükleyerek kullanırız. Böylece tasarım ve mantık ayrı ayrı yönetilir, güncellemeler daha kolay olur.
+Bu dersin sonunda aşağıdaki yetkinliklere sahip olacaksınız:
 
-### Qt Designer Nedir? Kurulumu ve Arayüz Bileşenleri
+- **Qt Designer** görsel tasarım aracını kullanarak sürükle-bırak yöntemiyle arayüz tasarlayabilmek.
+- `.ui` (XML tabanlı) dosya formatının yapısını ve önemini kavramak.
+- Tasarlanan `.ui` dosyalarını Python koduna iki farklı yöntemle (dinamik yükleme ve dönüştürme) entegre edebilmek.
+- Tasarım dosyasındaki bileşenlere (widget) Python tarafında erişebilmek.
+- Görsel tasarım ile iş mantığını (business logic) birbirinden ayırabilmek.
 
-Qt Designer, Qt ekosunun bir parçası olan görsel bir arayüz tasarım aracıdır. Widget'ları bir forma sürükleyip, özelliklerini (property) düzenleyerek hızlıca prototip oluşturabiliriz. PySide6 ile birlikte kurulan `pyside6-designer` komutuyla başlatılır veya Qt'nin kendi kurulumunda bulunan Designer aracı kullanılır.
+## 💡 Neden Bu Konuyu Öğreniyoruz?
 
-> [!TIP]
-> Qt Designer'da bir widget seçildiğinde sağ özellik penceresinde (Property Editor) o widget'ın tüm ayarlarını görür ve değiştirebiliriz; bu da her bir özellik için kod yazmak zorunda kalmayımızı sağlar.
+Bir arayüzü tamamen kod yazarak oluşturmak (hard-coding), özellikle karmaşık ve çok fazla bileşen içeren uygulamalarda çok zaman alır ve hata yapma olasılığını artırır. 
 
-### .ui Dosya Formatı ve XML Yapısı
+**Qt Designer**, bir "tuval" üzerinde butonları, etiketleri ve kutuları sürükleyip bırakarak, koordinatlarla veya layoutlarla uğraşmadan hızlıca arayüz oluşturmanızı sağlayan görsel bir araçtır. Bu yöntem sayesinde:
+1.  **Hız:** Tasarım süreci çok daha hızlıdır.
+2.  **Ayrıştırma (Separation of Concerns):** Arayüz tasarımı (görsellik) ile Python kodunuz (mantık) birbirinden ayrı tutulur. Tasarımı değiştirmek için Python kodunu bozmanıza gerek kalmaz.
+3.  **Görsel Geri Bildirim:** Kod yazmadan önce uygulamanın nasıl görüneceğini anında görebilirsiniz.
 
-Qt Designer'da tasarlanan arayüzler `.ui` uzantılı XML dosyası olarak kaydedilir. Bu dosya, widget'ların hiyerarşisi, özellikleri ve düzenleri (layout) hakkında ayrıntılı bilgiler içerir. PySide6 bu XML'i çalışma zamanında okuyarak ilgili widget örneklerini oluşturur.
+## 🔍 Birlikte Keşfedelim
 
-| Özellik | Açıklama |
-|---------|----------|
-| Format | XML tabanlı |
-| İçerik | Widget sınıfları, özellikleri (objectName, geometry, styleSheet vb.), layout bilgileri |
-| Kullanım | `QUiLoader` veya `pyside6-uic` ile Python koduna dönüştürülür |
+Bir web sitesi tasarladığınızı düşünün. Bir web tasarımcısı, HTML kodlarını elle yazmak yerine, hazır kutuları ve resimleri bir sayfa üzerinde yerleştirerek tasarımı oluşturur. Ardından bu tasarım, arka plandaki kodlarla birleştirilir.
 
-> [!NOTE]
-> .ui dosyası içindeki `objectName` değerleri, Python kodundan bu widget'lara erişmek için kritiktir; bu isimler `findChild` veya doğrudan erişim (ui.widget_adi) ile kullanılır.
-
-### PySide6 İçinde .ui Yükleme Yöntemleri: QUiLoader vs pyside6-uic
-
-PySide6'de .ui dosyasını iki ana şekilde yükleyebiliriz:
-
-1. **QUiLoader** (Çalışma Zamanı Yükleme)
-   - `.ui` dosyasını doğrudan çalışma zamanında yükler ve widget hiyerarjisini döndürür.
-   - Değişiklikleri .ui dosyasında yapıp uygulamayı yeniden başlattığımızda güncellenen tasarımı görürüz (derleme gerekmez).
-   - Daha dinamik ve esnektir; tasarım sıkça değişiyorsa tercih edilir.
-
-2. **pyside6-uic** (Derleme Zamanı Dönüşümü)
-   - `.ui` dosyası önceden Python koduna dönüştürülür (örneğin `pyside6-uic tasarim.ui -o ui_tasarim.py`).
-   - Oluşan Python modülü doğrudan içe aktarılır; bu da çalışma zamanındaki XML ayrıştırma yükünü ortadan kaldırır.
-   - Tasarım değiştiğinde dönüşümü tekrarlamak gerekir.
-
-> [!IMPORTANT]
-> Öğrenme ve hızlı prototipleme için `QUiLoader` tercih edilir; çünkü .ui dosyasını her değiştirmek tek bir komutla güncellenir. Performans kritik uygulamalarda önceden üretilen Python modülü daha hızlı olabilir.
-
-### Dinamik Tasarım Dosyası Yüklemenin Avantajları
-
-`QUiLoader` ile çalışma zamanında .ui dosyası yüklemek şu avantajlar sağlar:
-
-- **Tasarım-Geliştirme Ayrılığı:** Tasarımcı .ui dosyasını düzenlerken geliştirici mantık kodunu değiştirmez.
-- **Hızlı İterasyon:** .ui dosyasında bir değişiklik yapıp uygulamayı yeniden başlatmak yeterlidir; derleme adımı yoktur.
-- **Esneklik:** Farklı .ui dosyaları koşullu olarak yüklenerek çoklu dil veya tema desteği kolaylaşır.
-- **Az Boilerplate:** Widget'ları tek tek oluşturup özelliklerini ayarlamak yerine tek bir yükleme çağrısı yeterlidir.
-
-> [!WARNING]
-> `QUiLoader` kullanırken .ui dosyasının yolunun mutlak veya çalışma dizinine göreceli olduğundan emin olmalıyız; aksi takdirde `FileNotFoundError` ile karşılaşırız.
-
-## 2. Adım Adım Kod Uygulaması
-
-> **Senaryo:** Qt Designer ile oluşturulmuş basit bir `tasarim.ui` dosyasını QUiLoader ile yükleyeceğiz. Bu dosyada bir `QLineEdit`, bir `QLabel` ve bir `QPushButton` bulunacak. Kullanıcı `QLineEdit` metnini girip butona bastığında, metin label'a kopyalanacaktır. Ayrıca .ui dosyasındaki widget'lara Python kodundan `findChild` yoluyla erişip sinyal/slot bağlayacağız. Son olarak, sırasımdaki görev olarak yeni bir .ui dosyasına `QLineEdit` ekleyip yazılan metni konsola yazdıracak bağlantıyı kuracağız.
+Qt Designer tam olarak bunu yapar. Siz bir "tasarımcı" gibi davranarak görsel yapıyı kurarsınız, biz ise bir "yazılımcı" gibi o yapıyı canlandıran kodları yazarız.
 
 > [!TIP]
-> Bu adımları VS Code'daki `main.py` ve `tasarim.ui` dosyalarında uygulayarak, her adımda dosyayı kaydedip `python main.py` komutuyla terminalde anlık sonuçları görebilirsiniz.
+> Profesyonel projelerde genellikle arayüz tasarımı (UI) ve uygulama mantığı (Logic) farklı dosyalarda tutulur. Bu, bir tasarımcının kod yazmadan arayüzü güncellemesine olanak tanır.
 
----
+## 🛠️ Uygulama
 
-### Adım 1: Qt Designer ile oluşturulmuş basit bir tasarim.ui dosyasını QUiLoader ile Python'a yükleme
+Bu derste, Qt Designer ile hazırladığımız bir tasarımı Python içinde **dinamik olarak yükleme** yöntemini öğreneceğiz.
 
-#### Eklenecek Kod
+### Adım 1: Qt Designer ile İlk Tasarımınızı Yapın
+
+1.  Terminalinize `designer` yazarak veya IDE'nizin araçları arasından Qt Designer'ı bularak programı açın.
+2.  **Main Window** şablonunu seçin ve "Create" butonuna basın.
+3.  Sol taraftaki **Widget Box** panelinden bir `Push Button` sürükleyip pencerenin içine bırakın.
+4.  Butona tıklayın ve sağ taraftaki **Property Editor** panelinden `objectName` özelliğini bulun. Burayı `btn_selamla` olarak değiştirin (Bu isim, Python'dan bu butona ulaşmamızı sağlayacak olan kimliktir!).
+5.  Bir de `Label` sürükleyip bırakın ve onun `objectName` değerini `lbl_mesaj` yapın.
+6.  Dosyayı `tasarim.ui` adıyla projenizin bulunduğu klasöre kaydedin.
+
+### Adım 2: Dinamik Yükleme (QUiLoader) ile Python Entegrasyonu
+
+Tasarım dosyasını (`.ui`), Python kodumuzun içine "çalışma anında" (runtime) yükleyeceğiz. Bu yöntem, tasarımda yaptığınız değişikliklerin kodu değiştirmeden hemen yansımasını sağlar.
 
 ```python
 import sys
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
 
-class AnaPencere:
-    def __init__(self):
-        # QUiLoader ile .ui dosyasını yükle
-        loader = QUiLoader()
-        ui_file = QFile("tasarim.ui")
-        ui_file.open(QFile.ReadOnly)
-        self.pencere = loader.load(ui_file)
-        ui_file.close()
-        self.pencere.setWindowTitle("Qt Designer Örneği")
-
-        # .ui dosyasındaki widget'lara erişim
-        self.line_edit = self.pencere.findChild(QLineEdit, "lineEdit")
-        self.label = self.pencere.findChild(QLabel, "label")
-        self.button = self.pencere.findChild(QPushButton, "pushButton")
-
-        # Butonun clicked sinyalini slotumuza bağla
-        self.button.clicked.connect(self.goster)
-
-    def goster(self):
-        metin = self.line_edit.text()
-        self.label.setText(metin)
-
-# Uygulama döngüsü
-app = QApplication(sys.argv)
-pencere = AnaPencere()
-pencere.pencere.show()
-sys.exit(app.exec())
-```
-
-#### Kod Analizi
-
-- **QUiLoader ve QFile:** `QUiLoader` örneği oluşturulur; `QFile` ile `tasarim.ui` dosyası okunur ve `loader.load()` çağrısıyla widget hiyerarjisi oluşturulur.
-- **Widget Erişimi:** `findChild()` metodu, verilen `objectName` ve widget tipiyle .ui dosyasındaki belirli widget'ı bulur. Burada `"lineEdit"`, `"label"` ve `"pushButton"` isimli öğeler alınır.
-- **Sinyal-Bağlantı:** Butonun `clicked` sinyali `self.goster` slotuna bağlanır; bu metod `QLineEdit` metnini alır ve `QLabel` metnini günceller.
-- **Pencere Gösterimi:** Yüklenmiş olan üst-level widget (genellikle bir `QMainWindow` veya `QWidget`) `.show()` ile ekranda görünür hale getirilir.
-
-#### Görsel / İşlevsel Sonuç
-
-```
-Ekranda tasarim.ui dosyasında tanımlanan pencere görünür.
-Pencerenin içinde:
-- Üstte metin girilecek bir kutucuk (QLineEdit, objectName: lineEdit)
-- Ortasında boş bir etiket (QLabel, objectName: label)
-- Altta bir düğme (QPushButton, objectName: pushButton) bulunur ve metni "Göster" olabilir.
-
-Kullanıcı QLineEdit'e bir metin yazar ve "Göster" butonuna tıklar.
-Butona tıklandığında, lineEdit'teki metin label'a kopyalanır ve anında görünür.
-```
-
-> [!NOTE]
-> Yukarıdaki örnekte "whose" ifadesi bir çeviri hatasıydı ve düzeltildi. Doğru ifade: "Altta bir düğme (QPushButton, objectName: pushButton) bulunur ve metni 'Göster' olabilir."
-
----
-
-### Adım 2: .ui içerisindeki widget'lara Python kodundan erişme (findChild veya ui.widget_adi)
-
-.ui dosyasını yükledikten sonra widget'ların özelliklerini değiştirmek, metin almak/ayarlamak veya sinyal/slot bağlamak için bu widget'lara Python tarafından erişmemiz gerekir. İki yaygın yol vardır: `findChild()` ve `pyside6-uic` ile üretilen modülde doğrudan özellik erişimi (`ui.widget_adi`).
-
-`QUiLoader` kullandığımız için `findChild()` en uygun yoldur; çünkü yükleme sonucu elde ettiğimiz nesne hiyerarjisi üzerinde arama yapar. Eğer `pyside6-uic` ile önceden üretilen bir Python modülü kullanıyorsak, o modülün içinde `ui` adlı bir nesne bulunur ve bu nesne üzerinden widget'lara doğrudan erişebiliriz (`ui.lineEdit`, `ui.label` vb.).
-
-> [!TIP]
-> `findChild()` çağrısında widget tipi belirtilmezse (`self.pencere.findChild(QObject, "lineEdit")`) tüm nesneler arasında arama yapar; tip belirtilmesi performansı artırır ve yanlış eşleşmeleri önler.
-
-> [!WARNING]
-> Eğer .ui dosyasındaki bir widget'ın `objectName`'i boş ise veya duplicated ise, `findChild()` sadece ilk eşleşeni döndürür; bu yüzden .ui dosyasındaki tüm isimlerin benzersiz ve anlamlı olduğundan emin olmamız gerekir.
-
-#### Ek Açıklama: ui.widget_adi Kullanımı (pyside6-uic)
-
-Eğer tercih edersek `pyside6-uic` komutuyla .ui dosyasını Python koduna dönüştürebiliriz:
-
-```bash
-pyside6-uic tasarim.ui -o ui_tasarim.py
-```
-
-Oluşan `ui_tasarim.py` modülü içinde bir `Ui_MainWindow` (veya tasarımımızın üst-sınıfına göre) sınıfı bulunur. Bu sınıfı kendi pencere sınıfımıza çok kalım (multiple inheritance) ya da içer olarak kullanırız:
-
-```python
-from ui_tasarim import Ui_MainWindow
-from PySide6.QtWidgets import QMainWindow
-
-class AnaPencere(QMainWindow, Ui_MainWindow):
+class AnaPencere(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)  # .ui üzerinden widget'ları oluşturur ve self'e bağlar
-        # Şimdi doğrudan erişim:
-        self.lineEdit.setText("Merhaba")
-        self.pushButton.clicked.connect(self.goster)
+        
+        # 1. Tasarım dosyasını yüklemek için QUiLoader nesnesi oluşturma
+        self.loader = QUiLoader()
+        
+        # 2. .ui dosyasını açma
+        self.ui_dosyasi = QFile("tasarim.ui")
+        self.ui_dosyasi.open(QFile.ReadOnly)
+        
+        # 3. Tasarımı yükleme (Bu işlem bize bir widget nesnesi döndürür)
+        self.ui = self.loader.load(self.ui_dosyasi, self)
+        self.ui_dosyasi.close()
+
+        # 4. Pencereyi ana pencere olarak ayarlama
+        self.setCentralWidget(self.ui)
+        self.setWindowTitle("Qt Designer Entegrasyonu")
+
+        # 5. Tasarımdaki bileşenlere (widget) erişme
+        # findChild metodu, nesne ismine (objectName) göre bileşeni bulur.
+        self.buton = self.ui.findChild(QPushButton, "btn_selamla")
+        self.etiket = self.ui.findChild(QLabel, "lbl_mesaj")
+
+        # 6. Sinyal-Slot bağlantısı
+        if self.buton:
+            self.buton.clicked.connect(self.selamla)
+
+    def selamla(self):
+        if self.etiket:
+            self.etiket.setText("👋 Tasarım başarıyla yüklendi!")
+
+def main():
+    app = QApplication(sys.argv)
+    pencere = AnaPencere()
+    pencere.show()
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
 ```
 
-Bu yöntem, çalışma zamanındaki XML ayrıştırma yükünü ortadan kaldırır; ancak .ui dosyası değiştirildiğinde dönüşümü tekrarlamak gerekir.
+**Önemli Detaylar:**
+- **`QUiLoader`**: `.ui` dosyasını okuyup onu çalışan bir nesneye dönüştüren araçtır.
+- **`findChild(Tip, "isim")`**: Tasarımda verdiğiniz `objectName` değerini kullanarak, Python tarafında o bileşene bir değişken ismiyle ulaşmanızı sağlar.
+- **`setCentralWidget(self.ui)`**: Yüklenen tasarımın tüm pencereyi kaplamasını sağlar.
+
+## 🧪 Deneyelim ve Gözlemleyelim
+
+1.  **Tasarımı Güncelleyin:** Qt Designer'ı tekrar açın. Butonun metnini değiştirin veya butonun rengini/boyutunu ayarlayın. Dosyayı kaydedin ve Python kodunu **tekrar çalıştırmadan** (sadece kapatıp açarak) sonucu görün. Değişiklikler anında yansıdı mı?
+2.  **İsim Değişikliği:** Qt Designer'da butonun `objectName` değerini `btn_yeni` yapın. Kodunuzu çalıştırın. Program hata veriyor mu? (İpucu: `findChild` artık eski ismi bulamadığı için `None` dönecektir!)
+
+## 🧠 Kendini Test Et
+
+1. **Soru:** `QUiLoader` yöntemi ile `.ui` dosyasını Python'a yüklemenin en büyük avantajı nedir?
+2. **Soru:** `findChild` metodunda neden ilk parametre olarak `QPushButton` gibi bir tip belirtiyoruz?
+
+<details>
+<summary>Cevapları göster</summary>
+
+1. **Cevap:** Dinamiktir. Tasarımda yapılan değişiklikler (renk, boyut, konum vb.) Python kodunda hiçbir satırı değiştirmeye gerek kalmadan, uygulama bir sonraki çalıştırıldığında doğrudan uygulanır.
+2. **Cevap:** Bu, arama işlemini daha güvenli ve hızlı hale getirir. Python'a "Bu isimdeki nesneyi bul ama sadece bir buton ise getir" demiş olursunuz.
+
+</details>
+
+## 🚀 Kendin Dene
+
+**Görev:**
+1.  Qt Designer ile yeni bir tasarım yapın.
+2.  İçine bir `QLineEdit` (metin girişi) ve bir `QPushButton` ekleyin.
+3.  `QLineEdit`'in adını `txt_giris`, butonun adını `btn_yazdir` yapın.
+4.  Python kodunuzda bu bileşenlere erişin.
+5.  Butona tıklandığında, `QLineEdit` içine yazılan metni bir `QLabel` içinde gösteren uygulamayı tamamlayın.
+
+## 📚 Daha Fazlasını Öğrenmek
+
+- [Qt Designer Official Documentation](https://doc.qt.io/qtforpython-6/PySide6/designer/index.html)
+- [pyside6-uic: .ui dosyalarını .py dosyasına dönüştürme](https://doc.qt.io/qtforpython-6/PySide6/scripts/pyside6-uic.html) (Alternatif yöntem)
 
 ---
-
-### Adım 3: Yüklenen tasarımdaki butona Python tarafında sinyal/slot bağlayarak etkileşim katma
-
-Bir web sayfasındaki bir butona tıklayınca bir işlem yapmak için JavaScript'te `addEventListener` kullanırız; PySide6'te de benzer mantıkla widget'ın sinyallerini (olayları) kendi fonksiyonlarımıza (slotlara) bağlarız.
-
-Bu adımda daha önceki kodda zaten yer alan `self.button.clicked.connect(self.goster)` satırını vurgulamak istiyoruz. Butonun `clicked` sinyali, kullanıcı farla butona bastığında tetiklenir; bu sinyal `self.goster` metodunu çalıştırır. Metod içinde `QLineEdit` metnini alır ve `QLabel`'a yazar; böylece etkileşim sağlanır.
-
-> [!NOTE]
-> Sinyal-slot mekanizması PySide6'nın temelidir; birden fazla sinyal tek bir slota, veya tek bir sinyal birden fazla slota bağlanabilir. Ayrıca özel (custom) sinyaller tanımlayıp kendi widget'larımızda da kullanabiliriz.
-
-> [!TIP]
-> Lambda fonksiyonlarıyla hızlı bağlantılar kurulabilir: `self.button.clicked.connect(lambda: self.label.setText(self.lineEdit.text()))`. Ancak okunabilirlik adına ayrı bir slot metodu tercih edilir.
-
----
-
-## 3. Sıra Sende (Pekiştirme Görevi)
-
-- **Görev:** Qt Designer'da yeni bir .ui dosyasına QLineEdit ekleyip Python'da yazılan metni konsola yazdıracak bağlantıyı kurma.
-- **İpucu:** Qt Designer'ı açarak yeni bir Form oluşturun, içine bir `QLineEdit` (objectName: consoleLineEdit) ve bir `QPushButton` (objectName: printButton) yerleştirin. Butonun `clicked` sinyali bir slot fonksiyonuna bağlayıp, o fonksiyonda `self.consoleLineEdit.text()` ile metni alın ve `print()` fonksiyonuyla konsola yazdırın.
-- **Beklenen Çıktı:** Kodu çalıştırdığınızda, pencereye bir metin kutusu ve bir "Yazdır" butonu görürünüz. Kutuyu bir metin doldurup butona tıkladığınızda, aynı metin konsola (terminal) yazdırılmalıdır.
-
-> [!TIP]
-> Konsola yazdırma işlemi için `print()` fonksiyonu yeterlidir; ancak gerçek uygulamalarda bu bilgiyi bir dosyaya yazmak veya başka bir sisteme göndermek istenebilir.
+[⬅️ Önceki Ders](Topics/04-Layout-Management.md) | [Sonraki Ders ➡️](Topics/06-Form-Widgets.md)
