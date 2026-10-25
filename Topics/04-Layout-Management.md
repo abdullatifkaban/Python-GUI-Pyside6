@@ -32,19 +32,11 @@ Layout mantığını bir **kitaplık** benzetmesiyle anlayabiliriz:
 
 Bu derste, iç içe geçmiş layout yapısını kullanarak profesyonel görünümlü bir buton grubu oluşturacağız.
 
-### Adım 1: Dikey Düzen (QVBoxLayout) Kurulumu
+### Adım 1: Temel Pencere Komutları
 
-Önce bileşenleri yukarıdan aşağıya dizecek olan dikey düzeni oluşturalım.
+Önce boş bir pencere oluşturan temel komutları yazalım.
 
-### Adım 2: Yatay Düzen (QHBoxLayout) ile Buton Grubu
-
-Butonları yan yana getirmek için yatay bir düzen oluşturup, bu düzeni dikey düzenin içine bir "alt bileşen" olarak yerleştireceğiz.
-
-### Adım 3: Esneklik Sağlama (addStretch)
-
-Butonların pencerenin en üstüne yapışık kalmasını değil, yukarıda toplu durmasını sağlamak için boşluk (stretch) ekleyeceğiz.
-
-```python
+```py
 import sys
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
                              QPushButton, QVBoxLayout, QHBoxLayout, QLabel)
@@ -58,34 +50,6 @@ class LayoutUygulamasi(QMainWindow):
         self.setWindowTitle("Layout Yönetimi Uygulaması")
         self.resize(400, 300)
 
-        # 1. Merkezi Widget ve Ana Dikey Layout (Vertical Layout)
-        self.merkezi_alan = QWidget()
-        self.setCentralWidget(self.merkezi_alan)
-        self.ana_layout = QVBoxLayout(self.merkezi_alan)
-
-        # Başlık etiketi
-        self.etiket = QLabel("Lütfen bir işlem seçin:")
-        self.ana_layout.addWidget(self.etiket)
-
-        # 2. Yatay Düzen (Horizontal Layout) Oluşturma
-        # Bu layout, butonları yan yana getirmek için bir 'grup' görevi görecek.
-        self.buton_grubu_layout = QHBoxLayout()
-
-        self.buton1 = QPushButton("Tamam")
-        self.buton2 = QPushButton("İptal")
-
-        # Butonları yatay layout'a ekliyoruz
-        self.buton_grubu_layout.addWidget(self.buton1)
-        self.buton_grubu_layout.addWidget(self.buton2)
-
-        # 3. İÇ İÇE YERLEŞİM (NESTED LAYOUT)
-        # Yatay layout'u, ana dikey layout'un içine bir parça olarak ekliyoruz.
-        self.ana_layout.addLayout(self.buton_grubu_layout)
-
-        # 4. Esneklik (Stretch) Ekleme
-        # Alttaki boşluğu doldurarak butonların ve etiketin yukarıda kalmasını sağlar.
-        self.ana_layout.addStretch()
-
 def main():
     app = QApplication(sys.argv)
     pencere = LayoutUygulamasi()
@@ -94,6 +58,72 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
+### Adım 2: Dikey Düzen (QVBoxLayout) Kurulumu
+
+Önce bileşenleri yukarıdan aşağıya dizecek olan dikey düzeni oluşturalım.
+
+```py
+        # 1. Merkezi Widget ve Ana Dikey Layout (Vertical Layout)
+        self.merkezi_alan = QWidget()
+        self.setCentralWidget(self.merkezi_alan)
+        self.ana_layout = QVBoxLayout(self.merkezi_alan)
+```
+
+
+### Adım 3: Nesneleri Yerleştirme
+
+Ekrana bir etiket ve iki adet düğme ekleyelim.
+
+```py
+        # Başlık etiketi
+        self.etiket = QLabel("Lütfen bir işlem seçin:")
+        self.ana_layout.addWidget(self.etiket)
+
+        # Butonlar
+        self.buton1 = QPushButton("Tamam")
+        self.buton2 = QPushButton("İptal")
+
+        # Butonları ana layout'a ekliyoruz
+        self.ana_layout.addWidget(self.buton1)
+        self.ana_layout.addWidget(self.buton2)
+```
+
+### Adım 4: Yatay Düzen (QHBoxLayout) ile Buton Grubu
+
+Butonları yan yana getirmek için yatay bir düzen oluşturup, bu düzeni dikey düzenin içine bir "alt bileşen" olarak yerleştireceğiz.
+
+```py
+        # 2. Yatay Düzen (Horizontal Layout) Oluşturma
+        # Bu layout, butonları yan yana getirmek için bir 'grup' görevi görecek.
+        self.buton_grubu_layout = QHBoxLayout()
+```
+
+Düğmeleri yatay düzende gösterebilmek için dahil olduğu layout ismini değiştiriyoruz.
+
+```py
+        # Butonları yatay layout'a ekliyoruz
+        self.buton_grubu_layout.addWidget(self.buton1)
+        self.buton_grubu_layout.addWidget(self.buton2)
+```
+
+Yatay layout'u, ana dikey layout'un içine bir parça olarak ekliyoruz.
+
+```py
+        # 3. İÇ İÇE YERLEŞİM (NESTED LAYOUT)
+        # Yatay layout'u, ana dikey layout'un içine bir parça olarak ekliyoruz.
+        self.ana_layout.addLayout(self.buton_grubu_layout)
+```
+
+### Adım 3: Esneklik Sağlama (addStretch)
+
+Butonların pencerenin en altına yapışık kalmasını değil, yukarıda toplu durmasını sağlamak için boşluk (stretch) ekleyeceğiz.
+
+```python
+        # 4. Esneklik (Stretch) Ekleme
+        # Alttaki boşluğu doldurarak butonların ve etiketin yukarıda kalmasını sağlar.
+        self.ana_layout.addStretch()
 ```
 
 **Kodun Analizi:**
@@ -133,6 +163,7 @@ if __name__ == "__main__":
 ## 📚 Daha Fazlasını Öğrenmek
 
 - [PySide6 Documentation: Layout Management](https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QLayout.html)
+- [QFormLayout Örneği](https://www.pythontutorial.net/pyqt/pyqt-qformlayout/)
 
 ---
 [⬅️ Önceki Ders](03-Signals-And-Slots.md) | [Sonraki Ders ➡️](05-Qt-Designer.md)
