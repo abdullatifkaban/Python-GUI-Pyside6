@@ -50,6 +50,10 @@ class LayoutUygulamasi(QMainWindow):
         self.setWindowTitle("Layout Yönetimi Uygulaması")
         self.resize(400, 300)
 
+        # ---------
+        # Aşağıdaki kodlar buraya gelecek
+        # ---------
+
 def main():
     app = QApplication(sys.argv)
     pencere = LayoutUygulamasi()
@@ -116,7 +120,7 @@ Yatay layout'u, ana dikey layout'un içine bir parça olarak ekliyoruz.
         self.ana_layout.addLayout(self.buton_grubu_layout)
 ```
 
-### Adım 3: Esneklik Sağlama (addStretch)
+### Adım 5: Esneklik Sağlama (addStretch)
 
 Butonların pencerenin en altına yapışık kalmasını değil, yukarıda toplu durmasını sağlamak için boşluk (stretch) ekleyeceğiz.
 
